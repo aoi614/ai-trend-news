@@ -37,7 +37,15 @@ async function generateArticle() {
     ---
     
     Then write a well-structured article with an introduction, 3-4 main headings (H2), subheadings (H3), bullet points, and code snippets or examples if applicable.
-    Make it engaging to read, optimized for SEO, and highly valuable for people interested in AI.
+    
+    ### CRITICAL WRITING STYLE RULES (ANTI-AI DETECTION):
+    1. WRITE LIKE A HUMAN TECH BLOGGER. Use a conversational, enthusiastic, and slightly informal tone in Japanese (Desu/Masu form, but natural).
+    2. NEVER use typical robotic AI phrases like "結論から言うと", "〜について解説します", "いかがでしたか？", "この記事では〜を紹介しました", "最後に", "まとめ", or "AI言語モデルとして".
+    3. Include "personal opinions" or simulated hands-on experiences (e.g., "実際に触ってみて驚いたのは…", "個人的にはここが神機能だと思いました").
+    4. Do not make the structure perfectly symmetric. Real humans write with varying paragraph lengths and use bolding (**) naturally for emphasis, not just on every keyword.
+    5. Do not write a generic dictionary-style explanation. Write it as a "Hot News/Review" column.
+    
+    Make it highly readable, optimized for SEO, and extremely valuable.
   `;
 
   try {
