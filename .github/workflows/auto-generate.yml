@@ -2,8 +2,8 @@ name: Auto Generate Blog Post
 
 on:
   schedule:
-    # Runs at 00:00 UTC (9:00 AM JST) every Monday. Change this to run more frequently if desired.
-    - cron: '0 0 * * 1'
+    # Runs at 00:00 UTC (9:00 AM JST) EVERY DAY.
+    - cron: '0 0 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 # Define permissions for the GITHUB_TOKEN so we can push code back to the repo

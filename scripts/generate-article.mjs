@@ -22,19 +22,22 @@ async function generateArticle() {
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const prompt = `
-    You are an expert tech blog writer. Write a high-quality, engaging blog post about a modern trending tech or programming topic.
+    You are an expert AI researcher and tech blog writer specializing in Artificial Intelligence. 
+    Write a high-quality, engaging, and highly informative blog post introducing the "latest AI tools", "recent AI news", or "AI learning tips".
+    Choose ONE specific AI topic for this article (e.g., a new AI image generator, an update to ChatGPT/Claude, or how AI is changing a specific industry) to make it deep and interesting.
+    
     The output MUST be exactly in valid Markdown format suitable for an Astro framework blog.
     Do not wrap the whole response in a markdown code block (\`\`\`markdown \`\`\`). Starts immediately with the frontmatter.
     Include the following YAML frontmatter at the very top of the file:
     ---
-    title: "[A Catchy, Clickable Title]"
-    description: "[A short 1-2 sentence compelling SEO description]"
+    title: "[A Catchy, Clickable Title about the AI topic]"
+    description: "[A short 1-2 sentence compelling SEO description about the AI tool/news]"
     pubDate: "YYYY-MM-DD"
     heroImage: "/blog-placeholder-about.jpg"
     ---
     
-    Then write a well-structured article with 3-4 main headings (H2), subheadings (H3), bullet points, and code snippets if applicable.
-    Make it engaging to read and optimized for SEO.
+    Then write a well-structured article with an introduction, 3-4 main headings (H2), subheadings (H3), bullet points, and code snippets or examples if applicable.
+    Make it engaging to read, optimized for SEO, and highly valuable for people interested in AI.
   `;
 
   try {
