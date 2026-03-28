@@ -6,7 +6,6 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://aoi614.github.io',
-	base: '/ai-trend-news',
+	site: 'https://ai-trend-news.com',
 	integrations: [mdx(), sitemap()],
 });
