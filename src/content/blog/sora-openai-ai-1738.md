@@ -2,7 +2,7 @@
 title: "まさかのSora終了！？ OpenAIの衝撃発表からAI業界の未来を読み解く"
 description: "OpenAIが満を持して発表したはずの動画生成AI「Sora」がまさかのサービス終了。この衝撃的なニュースは、AIバブルの行方、そして動画生成技術の未来に何を意味するのでしょうか？AI研究者の視点から深掘りします。"
 pubDate: 'Mar 28, 2026'
-heroImage: "/blog-placeholder-about.jpg"
+# heroImage removed
 ---
 
 こんにちは！ AI研究者であり、熱狂的なテクノロジーウォッチャーの皆さん、そしてこのブログを読んでくださっている皆さん。今日もAIの世界は目まぐるしく動いていますね。

@@ -48,7 +48,6 @@ async function generateArticle() {
     title: "[A Catchy, Clickable Title about the AI topic]"
     description: "[A short 1-2 sentence compelling SEO description about the AI tool/news]"
     pubDate: "YYYY-MM-DD"
-    heroImage: "/blog-placeholder-about.jpg"
     ---
     
     Then write a well-structured article with an introduction, 3-4 main headings (H2), subheadings (H3), bullet points, and code snippets or examples if applicable.

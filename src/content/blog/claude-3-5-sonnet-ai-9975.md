@@ -2,7 +2,7 @@
 title: "衝撃の速度と賢さ！Claude 3.5 Sonnetが「AIの新常識」を塗り替える？"
 description: "Anthropicから登場した最新AIモデル、Claude 3.5 Sonnetを徹底レビュー！その驚異的な処理速度、強化された視覚能力、そして新機能ArtifactsがあなたのAI体験をどう変えるのか、深掘りします。"
 pubDate: 'Mar 26, 2026'
-heroImage: "/blog-placeholder-about.jpg"
+# heroImage removed
 ---
 
 皆さん、こんにちは！AI界隈の最新ニュースにいつもアンテナを張っている皆さんなら、きっとこのニュースに度肝を抜かれたはずです。そう、Anthropicが先日発表した最新の高性能AIモデル、**Claude 3.5 Sonnet**の話です！
