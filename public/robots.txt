@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aoi614.github.io/ai-trend-news/sitemap-index.xml
