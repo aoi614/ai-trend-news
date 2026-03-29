@@ -1,0 +1,105 @@
+---
+/**
+ * TagBadge - カテゴリ別にアイコン・色が変わるタグバッジ
+ * Usage: <TagBadge tag="OpenAI" />
+ */
+interface Props {
+  tag: string;
+  size?: 'sm' | 'md';
+}
+
+const { tag, size = 'sm' } = Astro.props;
+
+// タグ → カテゴリマッピング（アイコン + カラー）
+const TAG_MAP: Record<string, { icon: string; color: string; bg: string }> = {
+  // 企業系
+  'OpenAI':     { icon: '🟢', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+  'ChatGPT':    { icon: '💬', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+  'GPT-5':      { icon: '🧠', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+  'GPT-5.4':    { icon: '🧠', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+  'Anthropic':  { icon: '🔶', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+  'Claude':     { icon: '🔶', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+  'Google':     { icon: '🔵', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+  'Gemini':     { icon: '✨', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+  'Apple':      { icon: '🍎', color: '#a855f7', bg: 'rgba(168,85,247,0.12)' },
+  'Siri':       { icon: '🍎', color: '#a855f7', bg: 'rgba(168,85,247,0.12)' },
+  'Meta':       { icon: '🌐', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)' },
+  // 技術カテゴリ
+  '画像生成':     { icon: '🎨', color: '#ec4899', bg: 'rgba(236,72,153,0.12)' },
+  '画像生成AI':   { icon: '🎨', color: '#ec4899', bg: 'rgba(236,72,153,0.12)' },
+  '動画生成AI':   { icon: '🎬', color: '#ec4899', bg: 'rgba(236,72,153,0.12)' },
+  '音声合成':     { icon: '🎵', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
+  'Sora':       { icon: '🎬', color: '#ec4899', bg: 'rgba(236,72,153,0.12)' },
+  // 分野系
+  'AI規制':      { icon: '⚖️', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+  'EU規制':      { icon: '⚖️', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+  'セキュリティ':   { icon: '🛡️', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+  'AIセキュリティ': { icon: '🛡️', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+  'サイバー攻撃':   { icon: '🛡️', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+  '情報セキュリティ': { icon: '🛡️', color: '#ef4444', bg: 'rgba(239,68,68,0.12)' },
+  'AI医療':      { icon: '🏥', color: '#06b6d4', bg: 'rgba(6,182,212,0.12)' },
+  '医療AI':      { icon: '🏥', color: '#06b6d4', bg: 'rgba(6,182,212,0.12)' },
+  '乳がん検診':    { icon: '🏥', color: '#06b6d4', bg: 'rgba(6,182,212,0.12)' },
+  '教育':        { icon: '📚', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
+  'EdTech':     { icon: '📚', color: '#f97316', bg: 'rgba(249,115,22,0.12)' },
+  'AIエージェント': { icon: '🤖', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)' },
+  'AI開発':      { icon: '💻', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)' },
+  'プログラミング':  { icon: '💻', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)' },
+  'SaaS':       { icon: '☁️', color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
+  'ロボット':      { icon: '🦾', color: '#14b8a6', bg: 'rgba(20,184,166,0.12)' },
+  'AI投資':      { icon: '💰', color: '#eab308', bg: 'rgba(234,179,8,0.12)' },
+  'スタートアップ':  { icon: '🚀', color: '#eab308', bg: 'rgba(234,179,8,0.12)' },
+};
+
+// デフォルト（マッチしなかった場合）
+const DEFAULT = { icon: '🏷️', color: '#0ea5e9', bg: 'rgba(14,165,233,0.12)' };
+
+// タグ名を部分一致でマッチさせる
+function getTagStyle(tagName: string) {
+  if (TAG_MAP[tagName]) return TAG_MAP[tagName];
+  for (const [key, val] of Object.entries(TAG_MAP)) {
+    if (tagName.includes(key) || key.includes(tagName)) return val;
+  }
+  return DEFAULT;
+}
+
+const style = getTagStyle(tag);
+const sizeClass = size === 'md' ? 'tag-badge--md' : '';
+---
+
+<span
+  class={`tag-badge ${sizeClass}`}
+  style={`--tag-color: ${style.color}; --tag-bg: ${style.bg};`}
+>
+  <span class="tag-badge-icon">{style.icon}</span>
+  <span class="tag-badge-label">#{tag}</span>
+</span>
+
+<style>
+  .tag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    padding: 0.2em 0.6em;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--tag-color);
+    background: var(--tag-bg);
+    border: 1px solid color-mix(in srgb, var(--tag-color) 25%, transparent);
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    line-height: 1.4;
+  }
+  .tag-badge:hover {
+    filter: brightness(1.15);
+    transform: translateY(-1px);
+  }
+  .tag-badge-icon {
+    font-size: 0.8em;
+  }
+  .tag-badge--md {
+    font-size: 0.82rem;
+    padding: 0.3em 0.75em;
+  }
+</style>
