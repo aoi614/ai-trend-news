@@ -9,6 +9,7 @@ import FollowCTA from '../components/FollowCTA.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import AuthorProfile from '../components/AuthorProfile.astro';
 
 interface Heading {
 	depth: number;
@@ -135,7 +136,41 @@ const breadcrumbItems = [
 				background: linear-gradient(90deg, #0ea5e9, #38bdf8, #0ea5e9);
 			}
 
-			/* ===== Prose ===== */
+			/* ===== Prose & Layout ===== */
+			.article-content-wrapper {
+				display: flex;
+				flex-direction: column;
+				max-width: 1140px;
+				margin: 0 auto;
+			}
+			.article-sidebar {
+				display: block;
+				z-index: 10;
+			}
+			@media (min-width: 1024px) {
+				.article-content-wrapper {
+					flex-direction: row-reverse;
+					align-items: flex-start;
+					justify-content: center;
+					gap: 2rem;
+					padding: 0 1.5rem;
+				}
+				.article-sidebar {
+					position: sticky;
+					top: 2rem;
+					width: 320px;
+					flex-shrink: 0;
+					margin-top: 2.5rem;
+				}
+				.article-body {
+					flex-grow: 1;
+					max-width: 760px;
+					margin: 0;
+					padding-left: 0;
+					padding-right: 0;
+				}
+			}
+
 			.article-body {
 				max-width: 760px;
 				margin: 0 auto;
@@ -342,10 +377,23 @@ const breadcrumbItems = [
 					grid-template-columns: 1fr;
 				}
 			}
+
+			/* ===== Progress Bar ===== */
+			#reading-progress {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 0%;
+				height: 4px;
+				background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+				z-index: 9999;
+				transition: width 0.1s ease-out;
+			}
 		</style>
 	</head>
 
 	<body>
+		<div id="reading-progress"></div>
 		<Header />
 		<main>
 			<article>
@@ -390,12 +438,17 @@ const breadcrumbItems = [
 					<AdInsert />
 				</div>
 
-				<!-- Table of Contents -->
-				<TableOfContents headings={headings} />
+				<!-- Layout Wrapper for Sticky Sidebar -->
+				<div class="article-content-wrapper">
+					<!-- Sidebar: Table of Contents -->
+					<aside class="article-sidebar">
+						<TableOfContents headings={headings} />
+					</aside>
 
-				<!-- Article Body -->
-				<div class="article-body prose">
-					<slot />
+					<!-- Article Body -->
+					<div class="article-body prose">
+						<slot />
+					</div>
 				</div>
 
 				<!-- Ad: Bottom of article -->
@@ -427,6 +480,9 @@ const breadcrumbItems = [
 						</div>
 					</div>
 				</div>
+
+				<!-- Author Box -->
+				<AuthorProfile />
 
 				<!-- Follow CTA -->
 				<FollowCTA />
@@ -464,5 +520,54 @@ const breadcrumbItems = [
 			</article>
 		</main>
 		<Footer />
+
+		<!-- Progress Bar Script & Inline Ad Injector -->
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				// 1. Reading Progress Bar
+				const progressBar = document.getElementById('reading-progress');
+				const updateProgress = () => {
+					const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+					const scrolled = window.scrollY;
+					const progress = Math.min(100, Math.max(0, (scrolled / scrollHeight) * 100));
+					if (progressBar) progressBar.style.width = `${progress}%`;
+				};
+				window.addEventListener('scroll', updateProgress, { passive: true });
+				updateProgress();
+
+				// 2. Inline Ad Injection
+				const articleBody = document.querySelector('.article-body');
+				if (articleBody) {
+					// Find all H2 tags inside the article body
+					const h2s = articleBody.querySelectorAll('h2');
+					if (h2s.length >= 2) {
+						// Insert before the 2nd H2 tag
+						const targetH2 = h2s[1];
+						
+						// Create new Ad container
+						const adContainer = document.createElement('div');
+						adContainer.className = 'inline-ad-container';
+						adContainer.style.margin = '2rem 0';
+						adContainer.style.textAlign = 'center';
+						
+						// Clone an existing specific ad block or create structure
+						const existingAd = document.querySelector('.ad-container');
+						if (existingAd) {
+							// For real deployment, prefer loading a specific ad slot via component
+							adContainer.innerHTML = existingAd.innerHTML;
+							targetH2.parentNode?.insertBefore(adContainer, targetH2);
+							
+							// Inform AdSense it needs to fill a new container
+							try {
+								// @ts-ignore
+								(window.adsbygoogle = window.adsbygoogle || []).push({});
+							} catch (e) {
+								console.error("AdSense array push error", e);
+							}
+						}
+					}
+				}
+			});
+		</script>
 	</body>
 </html>
