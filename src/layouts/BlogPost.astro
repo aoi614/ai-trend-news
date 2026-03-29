@@ -23,7 +23,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	headings?: Heading[];
 };
 
-const { title, description, pubDate, updatedDate, heroImage, slug, relatedPosts = [], readingTime, headings = [] } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, slug, relatedPosts = [], readingTime, headings = [], tags = [] } = Astro.props;
 
 const pageUrl = Astro.url.href;
 const encodedUrl = encodeURIComponent(pageUrl);
@@ -94,7 +94,29 @@ const breadcrumbItems = [
 				font-weight: 700;
 				line-height: 1.4;
 				color: var(--dark-text);
-				margin: 0 0 1.5rem;
+				margin: 0 0 1rem;
+			}
+			.article-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				margin-bottom: 2rem;
+			}
+			.article-tag {
+				display: inline-flex;
+				align-items: center;
+				font-size: 0.8rem;
+				font-weight: 600;
+				color: var(--accent-light);
+				background: rgba(14, 165, 233, 0.1);
+				padding: 0.3em 0.8em;
+				border-radius: 6px;
+				text-decoration: none;
+				transition: background 0.2s, color 0.2s;
+			}
+			.article-tag:hover {
+				background: var(--accent);
+				color: white;
 			}
 			.article-hero-image {
 				width: 100%;
@@ -347,6 +369,13 @@ const breadcrumbItems = [
 							)}
 						</div>
 						<h1>{title}</h1>
+						{tags && tags.length > 0 && (
+							<div class="article-tags">
+								{tags.map((tag) => (
+									<a href={`/tags/${tag}/`} class="article-tag">#{tag}</a>
+								))}
+							</div>
+						)}
 					</div>
 					{heroImage && (
 						<div class="article-hero-image">

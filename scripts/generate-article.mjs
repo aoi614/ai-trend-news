@@ -158,6 +158,7 @@ async function generateArticle() {
     title: "[A Catchy, Clickable Title about the AI topic]"
     description: "[A compelling SEO description in 120-160 characters. Include the main keyword naturally. Make it actionable and curiosity-inducing.]"
     pubDate: "YYYY-MM-DD"
+    tags: ["タグ1", "タグ2"]  # Must be an array of 2 to 4 keywords (e.g. "OpenAI", "ChatGPT", "画像生成")
     ---
     
     ### ARTICLE STRUCTURE REQUIREMENTS:

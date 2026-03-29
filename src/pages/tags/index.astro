@@ -1,0 +1,86 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const tags = posts.flatMap((post) => post.data.tags || []);
+const uniqueTags = [...new Set(tags)];
+
+const tagsWithCount = uniqueTags.map((tag) => {
+	const count = posts.filter((post) => post.data.tags?.includes(tag)).length;
+	return { tag, count };
+}).sort((a, b) => b.count - a.count);
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<BaseHead title={`タグ一覧 | ${SITE_TITLE}`} description="AIトレンド速報の記事タグ一覧" />
+		<style>
+			main {
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 3rem 1rem;
+			}
+			h1 {
+				font-size: 2rem;
+				font-weight: 700;
+				margin-bottom: 2rem;
+				text-align: center;
+				color: var(--dark-text);
+			}
+			.tags-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+				gap: 1rem;
+			}
+			.tag-card {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 1rem 1.5rem;
+				background: var(--card-bg);
+				border-radius: 12px;
+				text-decoration: none;
+				box-shadow: var(--card-shadow);
+				transition: transform 0.2s, box-shadow 0.2s;
+				border: 1px solid rgba(var(--gray-light), 0.2);
+			}
+			.tag-card:hover {
+				transform: translateY(-3px);
+				box-shadow: var(--card-shadow-hover);
+			}
+			.tag-name {
+				font-weight: 600;
+				color: var(--accent);
+				font-size: 1.1rem;
+			}
+			.tag-count {
+				background: rgba(14, 165, 233, 0.1);
+				color: var(--accent);
+				padding: 0.2em 0.8em;
+				border-radius: 999px;
+				font-size: 0.8rem;
+				font-weight: 700;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>🏷️ タグ一覧</h1>
+			<div class="tags-grid">
+				{tagsWithCount.map(({ tag, count }) => (
+					<a href={`/tags/${tag}/`} class="tag-card">
+						<span class="tag-name">#{tag}</span>
+						<span class="tag-count">{count}</span>
+					</a>
+				))}
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
