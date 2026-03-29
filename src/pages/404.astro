@@ -180,7 +180,7 @@ const latestPosts = (await getCollection('blog'))
 							<a class="suggest-card" href={`/blog/${post.id}/`}>
 								{post.data.heroImage ? (
 									<div class="suggest-card-image">
-										<Image width={400} height={225} src={post.data.heroImage} alt="" />
+										<img width="400" height="225" src={post.data.heroImage} alt="" style="width:100%;height:auto;" />
 									</div>
 								) : (
 									<div class="suggest-card-image"></div>
