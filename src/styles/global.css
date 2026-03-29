@@ -62,10 +62,10 @@ body {
 	line-height: 1.7;
 }
 main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-	margin: auto;
-	padding: 3em 1em;
+	width: 100%;
+	max-width: 100%;
+	margin: 0 auto;
+	padding: 0;
 }
 h1, h2, h3, h4, h5, h6 {
 	margin: 0 0 0.5rem 0;
@@ -224,7 +224,6 @@ hr {
 /* ===== Responsive ===== */
 @media (max-width: 720px) {
 	body { font-size: 18px; }
-	main { padding: 1em; }
 	.mini-hero {
 		padding: 2rem 1.5rem 2rem;
 	}

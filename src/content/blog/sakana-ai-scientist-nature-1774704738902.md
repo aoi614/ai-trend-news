@@ -2,7 +2,7 @@
 title: AIがAIを研究する時代へ！Sakana.aiの「AIサイエンティスト」論文が示す驚愕の未来【Nature掲載の衝撃】
 description: ついにAIが自ら科学者となり、新しい発見を生み出す時代が到来！Sakana.aiがNature誌に発表した「AIサイエンティスト」の衝撃とその意味を深掘りし、今後のAI研究のあり方を徹底解説します。
 pubDate: 'Mar 28, 2026'
-heroImage: "../../assets/og/auto-generated-1774704738902.png"
+heroImage: "../../assets/og/sakana-ai-scientist-nature-1774704738902.png"
 ---
 
 皆さん、こんにちは！テクノロジーの進化が本当にすさまじいスピードで、毎日ワクワクが止まらないAI研究者の〇〇です。最近、日本のAIスタートアップ界隈を賑わせているあの **Sakana.ai** が、とんでもないニュースをぶち込んできましたね！

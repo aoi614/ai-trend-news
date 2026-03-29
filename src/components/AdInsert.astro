@@ -2,14 +2,14 @@
 /**
  * AdInsert — Inline AdSense ad unit for article pages.
  * Renders a responsive AdSense display ad.
- * Place this component between content sections (e.g., after H2 headings).
+ * Hides itself if AdSense hasn't loaded or ad isn't filled.
  */
 interface Props {
 	slot?: string;
 }
 ---
 
-<div class="ad-container">
+<div class="ad-container" data-ad-wrapper>
 	<ins class="adsbygoogle"
 		style="display:block"
 		data-ad-client="ca-pub-8204767432830277"
@@ -21,12 +21,31 @@ interface Props {
 <style>
 	.ad-container {
 		margin: 2rem 0;
-		padding: 0.5rem 0;
-		min-height: 100px;
+		padding: 0;
 		text-align: center;
+		min-height: 0;
+		overflow: hidden;
+		transition: min-height 0.3s ease;
+	}
+	.ad-container.ad-loaded {
+		min-height: 100px;
+		padding: 0.5rem 0;
 	}
 </style>
 
 <script is:inline>
-	(adsbygoogle = window.adsbygoogle || []).push({});
+	try {
+		(adsbygoogle = window.adsbygoogle || []).push({});
+		// Check if ad was filled after a delay
+		setTimeout(() => {
+			document.querySelectorAll('[data-ad-wrapper]').forEach(wrapper => {
+				const ins = wrapper.querySelector('ins.adsbygoogle');
+				if (ins && ins.dataset.adStatus !== 'unfilled') {
+					wrapper.classList.add('ad-loaded');
+				}
+			});
+		}, 2000);
+	} catch (e) {
+		// AdSense not loaded — container stays collapsed
+	}
 </script>

@@ -30,7 +30,12 @@ async function loadFont() {
 }
 
 async function generateOgImage(title, slug, fontData, outputDir) {
-  const displayTitle = title.length > 40 ? title.substring(0, 38) + "…" : title;
+  // Auto-size font based on title length — no truncation
+  let fontSize = 52;
+  if (title.length > 40) fontSize = 36;
+  else if (title.length > 30) fontSize = 42;
+  else if (title.length > 20) fontSize = 48;
+
   const svg = await satori(
     {
       type: "div",
@@ -39,14 +44,14 @@ async function generateOgImage(title, slug, fontData, outputDir) {
           width: "100%", height: "100%", display: "flex", flexDirection: "column",
           justifyContent: "center", alignItems: "center",
           background: "linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%)",
-          padding: "60px", position: "relative",
+          padding: "60px 80px", position: "relative",
         },
         children: [
           { type: "div", props: { style: { position: "absolute", top: "-60px", right: "-60px", width: "300px", height: "300px", borderRadius: "50%", background: "radial-gradient(circle, rgba(14,165,233,0.3) 0%, transparent 70%)" } } },
           { type: "div", props: { style: { position: "absolute", bottom: "-40px", left: "-40px", width: "250px", height: "250px", borderRadius: "50%", background: "radial-gradient(circle, rgba(56,189,248,0.2) 0%, transparent 70%)" } } },
-          { type: "div", props: { style: { display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }, children: [{ type: "div", props: { style: { fontSize: "24px", color: "#0ea5e9", fontWeight: 700, letterSpacing: "0.05em" }, children: "🚀 AIトレンド速報" } }] } },
-          { type: "div", props: { style: { width: "80px", height: "4px", background: "linear-gradient(90deg, #0ea5e9, #38bdf8)", borderRadius: "2px", marginBottom: "32px" } } },
-          { type: "div", props: { style: { fontSize: title.length > 25 ? "42px" : "52px", fontWeight: 700, color: "#f1f5f9", textAlign: "center", lineHeight: 1.4, maxWidth: "1000px", display: "flex" }, children: displayTitle } },
+          { type: "div", props: { style: { display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }, children: [{ type: "div", props: { style: { fontSize: "22px", color: "#0ea5e9", fontWeight: 700, letterSpacing: "0.05em" }, children: "🚀 AIトレンド速報" } }] } },
+          { type: "div", props: { style: { width: "80px", height: "4px", background: "linear-gradient(90deg, #0ea5e9, #38bdf8)", borderRadius: "2px", marginBottom: "24px" } } },
+          { type: "div", props: { style: { fontSize: `${fontSize}px`, fontWeight: 700, color: "#f1f5f9", textAlign: "center", lineHeight: 1.4, maxWidth: "1040px", wordBreak: "keep-all", overflowWrap: "break-word" }, children: title } },
           { type: "div", props: { style: { position: "absolute", bottom: "0", left: "0", right: "0", height: "6px", background: "linear-gradient(90deg, #0ea5e9, #38bdf8, #0ea5e9)" } } },
         ],
       },
@@ -60,24 +65,44 @@ async function generateOgImage(title, slug, fontData, outputDir) {
   return outputPath;
 }
 
-// ===== Duplicate Prevention: Load existing article titles =====
-async function getExistingTitles() {
+// ===== Duplicate Prevention: Load existing article titles & keywords =====
+async function getExistingArticles() {
   const blogDir = path.resolve(__dirname, "..", "src", "content", "blog");
   try {
     const files = await fs.readdir(blogDir);
-    const titles = [];
+    const articles = [];
     for (const file of files) {
       if (!file.endsWith(".md") && !file.endsWith(".mdx")) continue;
       const content = await fs.readFile(path.join(blogDir, file), "utf-8");
       const titleMatch = content.match(/title:\s*["']([^"']+)["']/);
       if (titleMatch) {
-        titles.push(titleMatch[1]);
+        articles.push({
+          title: titleMatch[1],
+          slug: file.replace(/\.(md|mdx)$/, ''),
+        });
       }
     }
-    return titles;
+    return articles;
   } catch {
     return [];
   }
+}
+
+// ===== Topic Diversity: Rotate RSS queries by day =====
+function getTodayQuery() {
+  const queries = [
+    'AI 最新ニュース 2026',
+    'ChatGPT OR Claude OR Gemini 新機能',
+    '生成AI ビジネス 活用',
+    'オープンソース AI LLM',
+    'AI 規制 法律 ガイドライン',
+    'AI 画像生成 動画生成 音楽',
+    'AI スタートアップ 資金調達',
+  ];
+  const dayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon, ...
+  const query = queries[dayOfWeek];
+  console.log(`📅 Today's query theme (day ${dayOfWeek}): ${query}`);
+  return query;
 }
 
 // ===== Article Generation =====
@@ -92,24 +117,30 @@ async function generateArticle() {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-  // --- Fetch Latest AI News from Google News RSS ---
+  // --- Fetch Latest AI News from Google News RSS (with topic rotation) ---
   console.log("Fetching latest AI news from Google News RSS...");
   const parser = new Parser();
-  // Fetch Japan Google News for AI topics
-  const query = encodeURIComponent('AI OR ChatGPT OR 生成AI');
-  const feed = await parser.parseURL(`https://news.google.com/rss/search?q=${query}&hl=ja&gl=JP&ceid=JP:ja`);
+  const queryStr = encodeURIComponent(getTodayQuery());
+  const feed = await parser.parseURL(`https://news.google.com/rss/search?q=${queryStr}&hl=ja&gl=JP&ceid=JP:ja`);
   
-  // Extract top 10 most recent headlines
-  const topNews = feed.items.slice(0, 10).map((item, i) => `${i+1}. ${item.title} (${item.pubDate})`).join("\n");
+  // Extract top 15 most recent headlines (wider net)
+  const topNews = feed.items.slice(0, 15).map((item, i) => `${i+1}. ${item.title} (${item.pubDate})`).join("\n");
   console.log("📰 Today's Headlines Found:\n" + topNews);
 
-  // --- Load existing titles for duplicate prevention ---
-  const existingTitles = await getExistingTitles();
-  console.log(`📝 Existing articles: ${existingTitles.length} found`);
+  // --- Load existing articles for duplicate prevention ---
+  const existingArticles = await getExistingArticles();
+  console.log(`📝 Existing articles: ${existingArticles.length} found`);
 
-  const duplicateGuard = existingTitles.length > 0
-    ? `\n\n### DUPLICATE PREVENTION (CRITICAL):\nThe following topics have ALREADY been written about on this blog. Do NOT choose the same or very similar topics:\n${existingTitles.map((t, i) => `- ${t}`).join("\n")}\n\nChoose a DIFFERENT, FRESH topic from the headlines above that is NOT covered by any of the existing articles.\n`
-    : "";
+  // Build stronger duplicate guard with titles AND key topic keywords
+  let duplicateGuard = '';
+  if (existingArticles.length > 0) {
+    const titleList = existingArticles.map(a => `- ${a.title}`).join("\n");
+    // Extract key product/company names from slugs for keyword matching
+    const keywords = [...new Set(existingArticles.flatMap(a => 
+      a.slug.split('-').filter(w => w.length > 2 && !['the', 'and', 'for', 'that', 'with'].includes(w))
+    ))];
+    duplicateGuard = `\n\n### DUPLICATE PREVENTION (CRITICAL):\nThe following topics have ALREADY been written about on this blog. Do NOT choose the same or very similar topics:\n${titleList}\n\nKey products/companies already covered: ${keywords.join(', ')}\n\nYou MUST pick a GENUINELY DIFFERENT topic. If all headlines are about already-covered topics, find the most unique angle or a completely different aspect that hasn't been explored.\n`;
+  }
 
   const prompt = `
     You are an expert AI researcher and tech blog writer specializing in Artificial Intelligence. 
