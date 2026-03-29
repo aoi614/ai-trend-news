@@ -42,8 +42,8 @@ jobs:
           git config --global user.name 'GitHub Actions Bot'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           
-          # Add only the new blog posts generated
-          git add src/content/blog/
+          # Add new blog posts and their OG images
+          git add src/content/blog/ src/assets/og/
           
           # Only commit if there are changes
           if git diff --staged --quiet; then

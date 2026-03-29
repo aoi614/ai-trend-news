@@ -1,40 +1,328 @@
 ---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const latestPosts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 6);
 ---
 
 <!doctype html>
 <html lang="ja">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			/* ===== Hero Section ===== */
+			.hero {
+				position: relative;
+				overflow: hidden;
+				padding: 5rem 2rem 4rem;
+				background: linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%);
+				text-align: center;
+				color: #f1f5f9;
+			}
+			.hero::before {
+				content: '';
+				position: absolute;
+				top: -120px;
+				right: -80px;
+				width: 400px;
+				height: 400px;
+				border-radius: 50%;
+				background: radial-gradient(circle, rgba(14,165,233,0.2) 0%, transparent 70%);
+				pointer-events: none;
+			}
+			.hero::after {
+				content: '';
+				position: absolute;
+				bottom: -80px;
+				left: -60px;
+				width: 350px;
+				height: 350px;
+				border-radius: 50%;
+				background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, transparent 70%);
+				pointer-events: none;
+			}
+			.hero-content {
+				position: relative;
+				z-index: 1;
+				max-width: 800px;
+				margin: 0 auto;
+			}
+			.hero-badge {
+				display: inline-block;
+				padding: 0.4em 1.2em;
+				border-radius: 999px;
+				background: rgba(14, 165, 233, 0.15);
+				border: 1px solid rgba(14, 165, 233, 0.3);
+				color: #38bdf8;
+				font-size: 0.85rem;
+				font-weight: 500;
+				letter-spacing: 0.05em;
+				margin-bottom: 1.5rem;
+			}
+			.hero h1 {
+				font-size: 2.8rem;
+				font-weight: 700;
+				line-height: 1.3;
+				margin-bottom: 1rem;
+				color: #f1f5f9;
+			}
+			.hero h1 .accent {
+				background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+			.hero p {
+				font-size: 1.1rem;
+				line-height: 1.8;
+				color: #94a3b8;
+				margin-bottom: 2rem;
+				max-width: 600px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			.hero-cta {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5em;
+				padding: 0.9em 2em;
+				border-radius: 12px;
+				background: linear-gradient(135deg, #0ea5e9, #0284c7);
+				color: white;
+				font-weight: 600;
+				font-size: 1rem;
+				text-decoration: none;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+			}
+			.hero-cta:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 30px rgba(14, 165, 233, 0.4);
+				color: white;
+			}
+			.hero-bottom-bar {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				height: 4px;
+				background: linear-gradient(90deg, #0ea5e9, #38bdf8, #0ea5e9);
+			}
+
+			/* ===== Features ===== */
+			.features {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				gap: 1.5rem;
+				max-width: 960px;
+				margin: -2rem auto 0;
+				padding: 0 1.5rem;
+				position: relative;
+				z-index: 2;
+			}
+			.feature-card {
+				background: white;
+				border-radius: 16px;
+				padding: 1.5rem;
+				text-align: center;
+				box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+				transition: transform 0.3s ease, box-shadow 0.3s ease;
+			}
+			.feature-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+			}
+			.feature-icon {
+				font-size: 2rem;
+				margin-bottom: 0.75rem;
+			}
+			.feature-card h3 {
+				font-size: 1rem;
+				font-weight: 600;
+				margin-bottom: 0.4rem;
+				color: rgb(var(--gray-dark));
+			}
+			.feature-card p {
+				font-size: 0.85rem;
+				color: rgb(var(--gray));
+				line-height: 1.6;
+				margin: 0;
+			}
+
+			/* ===== Latest Posts ===== */
+			.latest-section {
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 4rem 1.5rem 3rem;
+			}
+			.section-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 2rem;
+			}
+			.section-header h2 {
+				font-size: 1.8rem;
+				font-weight: 700;
+				color: rgb(var(--gray-dark));
+				margin: 0;
+			}
+			.section-header a {
+				font-size: 0.9rem;
+				color: var(--accent);
+				text-decoration: none;
+				font-weight: 500;
+				transition: color 0.2s;
+			}
+			.section-header a:hover {
+				color: var(--accent-dark);
+			}
+			.posts-grid {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				gap: 1.5rem;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.post-card {
+				background: white;
+				border-radius: 16px;
+				overflow: hidden;
+				box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+				transition: transform 0.3s ease, box-shadow 0.3s ease;
+			}
+			.post-card:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+			}
+			.post-card a {
+				text-decoration: none;
+				display: block;
+			}
+			.post-card img {
+				width: 100%;
+				aspect-ratio: 1200 / 630;
+				object-fit: cover;
+				border-radius: 0;
+				margin: 0;
+			}
+			.post-card-body {
+				padding: 1.2rem 1.5rem 1.5rem;
+			}
+			.post-card-body .date {
+				font-size: 0.8rem;
+				color: rgb(var(--gray));
+				margin-bottom: 0.5rem;
+			}
+			.post-card-body h3 {
+				font-size: 1.05rem;
+				font-weight: 600;
+				line-height: 1.5;
+				color: rgb(var(--gray-dark));
+				margin: 0;
+				transition: color 0.2s;
+			}
+			.post-card a:hover h3 {
+				color: var(--accent);
+			}
+
+			/* ===== Responsive ===== */
+			@media (max-width: 768px) {
+				.hero {
+					padding: 3rem 1.5rem 3rem;
+				}
+				.hero h1 {
+					font-size: 1.8rem;
+				}
+				.hero p {
+					font-size: 0.95rem;
+				}
+				.features {
+					grid-template-columns: 1fr;
+					gap: 1rem;
+					margin-top: -1.5rem;
+				}
+				.posts-grid {
+					grid-template-columns: 1fr;
+				}
+				.section-header h2 {
+					font-size: 1.4rem;
+				}
+			}
+		</style>
 	</head>
 	<body>
 		<Header />
-		<main>
-			<h1>🚀 最新のAIニュースを毎日お届け</h1>
-			<p>
-				ようこそ！<strong>AIトレンド速報</strong>は、ChatGPT、Claude、画像生成AIなどの最新ツール情報や、AI業界のトレンドニュースを毎日自動でお届けする専門メディアです。
-			</p>
-			
-			<div style="background-color: #f4f6f8; padding: 1.5rem; border-radius: 8px; margin: 2rem 0; border-left: 4px solid #3b82f6;">
-				<h3 style="margin-top: 0; color: #1e3a8a;">💡 今日の最新記事をチェック！</h3>
-				<p style="margin-bottom: 0;">
-					上部の「Blog」タブから、AIが自動執筆した最新のニュース一覧を読むことができます。毎日更新されるのでお見逃しなく！
-				</p>
-			</div>
 
-			<h3>📌 当サイトについて</h3>
-			<p>
-				このブログ自体が実はAIによって完全自動で運営されています。裏側でAPIがスケジュール実行され、最新の技術トレンドをリサーチして自動で記事を執筆・公開する仕組みになっています。
-			</p>
-			<ul>
-				<li>完全自動・毎日更新のAIキュレーション</li>
-				<li>SEOに最適化された人間らしい自然な文章</li>
-				<li>最新のAIツールの使い方を一足早くキャッチ</li>
+		<!-- Hero Section -->
+		<section class="hero">
+			<div class="hero-content">
+				<span class="hero-badge">🤖 毎日自動更新</span>
+				<h1>
+					<span class="accent">AI</span>の最新トレンドを<br />誰よりも早くキャッチ
+				</h1>
+				<p>
+					ChatGPT、Claude、画像生成AI… 急速に進化するAI業界の最新ニュースを、AIが自動でリサーチ・執筆してお届けする専門メディアです。
+				</p>
+				<a href="/blog" class="hero-cta">
+					最新記事を読む →
+				</a>
+			</div>
+			<div class="hero-bottom-bar"></div>
+		</section>
+
+		<!-- Feature Cards -->
+		<div class="features">
+			<div class="feature-card">
+				<div class="feature-icon">⚡</div>
+				<h3>毎日自動更新</h3>
+				<p>AIが最新ニュースをリサーチし、毎日記事を自動執筆・公開</p>
+			</div>
+			<div class="feature-card">
+				<div class="feature-icon">🎯</div>
+				<h3>厳選トピック</h3>
+				<p>話題のAIツールや業界動向を厳選してわかりやすく解説</p>
+			</div>
+			<div class="feature-card">
+				<div class="feature-icon">🔍</div>
+				<h3>SEO最適化</h3>
+				<p>検索エンジンに最適化された、読みやすい自然な日本語記事</p>
+			</div>
+		</div>
+
+		<!-- Latest Posts -->
+		<section class="latest-section">
+			<div class="section-header">
+				<h2>📰 最新の記事</h2>
+				<a href="/blog">すべての記事を見る →</a>
+			</div>
+			<ul class="posts-grid">
+				{latestPosts.map((post) => (
+					<li class="post-card">
+						<a href={`/blog/${post.id}/`}>
+							{post.data.heroImage && (
+								<Image width={600} height={315} src={post.data.heroImage} alt={post.data.title} />
+							)}
+							<div class="post-card-body">
+								<p class="date">
+									<FormattedDate date={post.data.pubDate} />
+								</p>
+								<h3>{post.data.title}</h3>
+							</div>
+						</a>
+					</li>
+				))}
 			</ul>
-		</main>
+		</section>
+
 		<Footer />
 	</body>
 </html>

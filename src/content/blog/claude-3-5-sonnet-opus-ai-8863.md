@@ -2,7 +2,7 @@
 title: "Claude 3.5 Sonnet爆誕！Opus超えの速さと賢さでAIの常識を覆すか？"
 description: "Anthropicから新モデル「Claude 3.5 Sonnet」が登場！驚きの処理速度とコスト効率、そして強化された視覚認識能力で、開発と日常のAI体験が激変するかもしれません。"
 pubDate: 'Mar 25, 2026'
-# heroImage removed
+heroImage: "../../assets/og/claude-3-5-sonnet-opus-ai-8863.png"
 ---
 
 「え、また新しいAI？」「もう追いつけないよ！」なんて声が聞こえてきそうですが、今回ばかりはちょっと立ち止まってほしいんです。Anthropicが突如発表した新モデル「**Claude 3.5 Sonnet**」が、その名の通り、詩的なほどに美しく、そしてとんでもないパフォーマンスを見せつけています。個人的には、あの「Opus」を初めて触った時の衝撃をはるかに超える興奮を覚えました。これまでのAIの常識が、また一つ書き換えられるかもしれませんよ！

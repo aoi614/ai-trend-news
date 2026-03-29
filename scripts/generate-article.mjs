@@ -4,6 +4,8 @@ import fs from "fs/promises";
 import path from "path";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
+import satori from "satori";
+import sharp from "sharp";
 
 // Load environment variables correctly
 dotenv.config();
@@ -11,6 +13,54 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// ===== OG Image Generation (inline) =====
+const OG_WIDTH = 1200;
+const OG_HEIGHT = 630;
+
+async function loadFont() {
+  const fontUrl = "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&display=swap";
+  const cssRes = await fetch(fontUrl, {
+    headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)" },
+  });
+  const css = await cssRes.text();
+  const match = css.match(/src:\s*url\(([^)]+)\)\s*format\(['"](?:woff2|truetype)['"]\)/);
+  if (!match) throw new Error("Could not find font URL in Google Fonts CSS");
+  const fontRes = await fetch(match[1]);
+  return Buffer.from(await fontRes.arrayBuffer());
+}
+
+async function generateOgImage(title, slug, fontData, outputDir) {
+  const displayTitle = title.length > 40 ? title.substring(0, 38) + "…" : title;
+  const svg = await satori(
+    {
+      type: "div",
+      props: {
+        style: {
+          width: "100%", height: "100%", display: "flex", flexDirection: "column",
+          justifyContent: "center", alignItems: "center",
+          background: "linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%)",
+          padding: "60px", position: "relative",
+        },
+        children: [
+          { type: "div", props: { style: { position: "absolute", top: "-60px", right: "-60px", width: "300px", height: "300px", borderRadius: "50%", background: "radial-gradient(circle, rgba(14,165,233,0.3) 0%, transparent 70%)" } } },
+          { type: "div", props: { style: { position: "absolute", bottom: "-40px", left: "-40px", width: "250px", height: "250px", borderRadius: "50%", background: "radial-gradient(circle, rgba(56,189,248,0.2) 0%, transparent 70%)" } } },
+          { type: "div", props: { style: { display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px" }, children: [{ type: "div", props: { style: { fontSize: "24px", color: "#0ea5e9", fontWeight: 700, letterSpacing: "0.05em" }, children: "🚀 AIトレンド速報" } }] } },
+          { type: "div", props: { style: { width: "80px", height: "4px", background: "linear-gradient(90deg, #0ea5e9, #38bdf8)", borderRadius: "2px", marginBottom: "32px" } } },
+          { type: "div", props: { style: { fontSize: title.length > 25 ? "42px" : "52px", fontWeight: 700, color: "#f1f5f9", textAlign: "center", lineHeight: 1.4, maxWidth: "1000px", display: "flex" }, children: displayTitle } },
+          { type: "div", props: { style: { position: "absolute", bottom: "0", left: "0", right: "0", height: "6px", background: "linear-gradient(90deg, #0ea5e9, #38bdf8, #0ea5e9)" } } },
+        ],
+      },
+    },
+    { width: OG_WIDTH, height: OG_HEIGHT, fonts: [{ name: "Noto Sans JP", data: fontData, weight: 700, style: "normal" }] }
+  );
+  const pngBuffer = await sharp(Buffer.from(svg)).png({ quality: 90 }).toBuffer();
+  const outputPath = path.join(outputDir, `${slug}.png`);
+  await fs.writeFile(outputPath, pngBuffer);
+  console.log(`  ✅ OG image generated: ${outputPath}`);
+  return outputPath;
+}
+
+// ===== Article Generation =====
 async function generateArticle() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -78,7 +128,6 @@ async function generateArticle() {
 
     // Replace the pubDate in the frontmatter with today's date
     const today = new Date();
-    // format as Jan 01 2024
     const formattedDate = today.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -89,32 +138,46 @@ async function generateArticle() {
 
     // Extract title from frontmatter to create a filename
     const titleMatch = text.match(/title:\s*["']([^"']+)["']/);
-    let filename = `auto-generated-${Date.now()}.md`;
+    let slug = `auto-generated-${Date.now()}`;
     
     if (titleMatch && titleMatch[1]) {
       // Create a URL-friendly slug from the title
-      let slug = titleMatch[1]
+      let s = titleMatch[1]
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)+/g, '');
-      if (slug) {
-        // Truncate if slug is too long
-        slug = slug.substring(0, 50);
-        filename = `${slug}-${Date.now().toString().slice(-4)}.md`;
+      if (s) {
+        slug = s.substring(0, 50) + `-${Date.now().toString().slice(-4)}`;
       }
     }
 
+    const filename = `${slug}.md`;
+
+    // --- Generate OG image for the new article ---
+    const ogDir = path.resolve(__dirname, "..", "src", "assets", "og");
+    await fs.mkdir(ogDir, { recursive: true });
+
+    console.log("\n🎨 Generating OG image...");
+    const fontData = await loadFont();
+    const articleTitle = titleMatch ? titleMatch[1] : slug;
+    await generateOgImage(articleTitle, slug, fontData, ogDir);
+
+    // Add heroImage to frontmatter
+    text = text.replace(
+      /^(---\n[\s\S]*?)(---)/,
+      (match, front, end) => front + `heroImage: "../../assets/og/${slug}.png"\n` + end
+    );
+
     // Define the output directory based on Astro's content collections
     const blogDir = path.resolve(__dirname, "..", "src", "content", "blog");
-    
-    // Ensure the blog directory exists
     await fs.mkdir(blogDir, { recursive: true });
     
     const filePath = path.join(blogDir, filename);
     
     // Write the Markdown file
     await fs.writeFile(filePath, text, "utf-8");
-    console.log(`✅ Successfully created new article: ${filePath}`);
+    console.log(`\n✅ Successfully created new article: ${filePath}`);
+    console.log(`🖼️  OG image: src/assets/og/${slug}.png`);
     
   } catch (error) {
     console.error("Error generating article:", error);
