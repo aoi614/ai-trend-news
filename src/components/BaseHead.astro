@@ -97,10 +97,13 @@ const breadcrumbData = breadcrumbs ? {
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-<!-- Google Fonts: Noto Sans JP -->
+<!-- Google Fonts: Noto Sans JP (preload for performance) -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
@@ -136,19 +139,35 @@ const breadcrumbData = breadcrumbs ? {
 <!-- Breadcrumb JSON-LD -->
 {breadcrumbData && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbData)} />}
 
-<!-- Google tag (gtag.js) -->
-<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-L0YV5M9E9L"></script>
+<!-- Google tag (gtag.js) - deferred for performance -->
 <script is:inline>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-L0YV5M9E9L');
+window.addEventListener('load', function() {
+  var s = document.createElement('script');
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=G-L0YV5M9E9L';
+  s.async = true;
+  document.head.appendChild(s);
+  s.onload = function() {
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-L0YV5M9E9L');
+  };
+});
 </script>
 
-<!-- Google AdSense -->
+<!-- Google AdSense - deferred -->
 <meta name="google-adsense-account" content="ca-pub-8204767432830277">
-<script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8204767432830277" crossorigin="anonymous"></script>
+<script is:inline>
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var s = document.createElement('script');
+    s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8204767432830277';
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    document.head.appendChild(s);
+  }, 2000);
+});
+</script>
 
 <!-- Initialize Theme -->
 <script is:inline>

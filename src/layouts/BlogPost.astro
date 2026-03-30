@@ -12,6 +12,7 @@ import Header from '../components/Header.astro';
 import AuthorProfile from '../components/AuthorProfile.astro';
 import Giscus from '../components/Giscus.astro';
 import TagBadge from '../components/TagBadge.astro';
+import NewsletterCTA from '../components/NewsletterCTA.astro';
 
 interface Heading {
 	depth: number;
@@ -282,6 +283,17 @@ const breadcrumbItems = [
 			}
 			.share-btn.hatena {
 				background: #00a4de;
+			}
+			.share-btn.line {
+				background: #06c755;
+			}
+			.share-btn.copy-link {
+				background: rgba(var(--gray-light), 0.5);
+				color: rgb(var(--gray-dark));
+			}
+			.share-btn.copy-link.copied {
+				background: #10b981;
+				color: white;
 			}
 
 			/* ===== Related Posts ===== */
@@ -595,6 +607,17 @@ const breadcrumbItems = [
 							>
 								B! はてブ
 							</a>
+							<a
+								class="share-btn line"
+								href={`https://social-plugins.line.me/lineit/share?url=${encodedUrl}`}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								LINE
+							</a>
+							<button class="share-btn copy-link" id="copy-link-btn" data-url={pageUrl}>
+								📋 URLコピー
+							</button>
 						</div>
 					</div>
 				</div>
@@ -602,16 +625,20 @@ const breadcrumbItems = [
 				<!-- Author Box -->
 				<AuthorProfile />
 
+				<!-- Newsletter CTA -->
+				<NewsletterCTA />
+
 				<!-- Comments section (Giscus) -->
 				<Giscus />
 
 				<!-- Follow CTA -->
 				<FollowCTA />
 
-				<!-- Related Posts -->
+				<!-- Related Posts - 「この記事を読んだ人はこちらも」 -->
 				{relatedPosts.length > 0 && (
 					<div class="related-section">
-						<h2 class="related-heading">📰 関連記事</h2>
+						<h2 class="related-heading">💡 この記事を読んだ人はこちらも読んでいます</h2>
+						<p style="max-width:760px;margin:0 auto 1.5rem;padding:0 1.5rem;font-size:0.85rem;color:rgb(var(--gray));">関連度の高い記事を自動セレクトしています</p>
 						<div class="related-grid">
 							{relatedPosts.map((post) => (
 								<a class="related-card" href={`/blog/${post.id}/`}>
@@ -736,6 +763,23 @@ const breadcrumbItems = [
 						popupDismissed = true;
 					});
 				}
+			}
+
+			// 5. Copy Link Button
+			const copyBtn = document.getElementById('copy-link-btn');
+			if (copyBtn) {
+				copyBtn.addEventListener('click', async () => {
+					try {
+						await navigator.clipboard.writeText(copyBtn.dataset.url || window.location.href);
+						const orig = copyBtn.innerHTML;
+						copyBtn.innerHTML = '✅ コピー済み';
+						copyBtn.classList.add('copied');
+						setTimeout(() => {
+							copyBtn.innerHTML = orig;
+							copyBtn.classList.remove('copied');
+						}, 2000);
+					} catch(e) { console.error(e); }
+				});
 			}
 		</script>
 	</body>
