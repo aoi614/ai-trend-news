@@ -224,18 +224,58 @@ async function generateArticle() {
 
     // Extract title from frontmatter to create a filename
     const titleMatch = text.match(/title:\s*["']([^"']+)["']/);
-    let slug = `auto-generated-${Date.now()}`;
-    
-    if (titleMatch && titleMatch[1]) {
-      // Create a URL-friendly slug from the title
-      let s = titleMatch[1]
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)+/g, '');
-      if (s) {
-        slug = s.substring(0, 50) + `-${Date.now().toString().slice(-4)}`;
+
+    // Extract slug from frontmatter if AI provided one
+    const slugMatch = text.match(/slug:\s*["']([^"']+)["']/);
+    let slug = '';
+
+    if (slugMatch && slugMatch[1]) {
+      slug = slugMatch[1].replace(/[^a-z0-9-]/g, '').substring(0, 60);
+    }
+
+    if (!slug && titleMatch && titleMatch[1]) {
+      // Map common Japanese AI terms to English for SEO-friendly slugs
+      const termMap = {
+        'OpenAI': 'openai', 'ChatGPT': 'chatgpt', 'GPT': 'gpt',
+        'Google': 'google', 'Gemini': 'gemini', 'Claude': 'claude',
+        'Anthropic': 'anthropic', 'Meta': 'meta', 'Apple': 'apple',
+        'Siri': 'siri', 'Microsoft': 'microsoft', 'Copilot': 'copilot',
+        'AI': 'ai', 'LLM': 'llm', 'AGI': 'agi',
+        '画像生成': 'image-gen', '動画生成': 'video-gen', '音声': 'voice',
+        'ロボット': 'robot', 'セキュリティ': 'security', '医療': 'medical',
+        '教育': 'education', '規制': 'regulation', '投資': 'investment',
+        'スタートアップ': 'startup', 'エージェント': 'agent',
+        '自動化': 'automation', 'プログラミング': 'programming',
+      };
+      
+      let parts = [];
+      const title = titleMatch[1];
+      // Extract English words and mapped terms
+      for (const [ja, en] of Object.entries(termMap)) {
+        if (title.includes(ja)) parts.push(en);
+      }
+      // Also grab any English words already in the title
+      const englishWords = title.match(/[A-Za-z][A-Za-z0-9]+/g);
+      if (englishWords) {
+        for (const w of englishWords) {
+          const lower = w.toLowerCase();
+          if (!parts.includes(lower) && lower.length > 1) parts.push(lower);
+        }
+      }
+      
+      if (parts.length > 0) {
+        slug = [...new Set(parts)].slice(0, 5).join('-');
       }
     }
+
+    // Final fallback with date
+    if (!slug) {
+      const d = new Date();
+      slug = `ai-news-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    // Add short unique suffix to prevent collision
+    slug = slug.substring(0, 55) + '-' + Date.now().toString(36).slice(-4);
 
     const filename = `${slug}.md`;
 

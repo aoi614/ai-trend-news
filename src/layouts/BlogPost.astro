@@ -33,6 +33,23 @@ const pageUrl = Astro.url.href;
 const encodedUrl = encodeURIComponent(pageUrl);
 const encodedTitle = encodeURIComponent(title);
 
+// Generate FAQ structured data from H2 headings
+const faqItems = headings
+	.filter(h => h.depth === 2 && !h.text.includes('関連ツール') && !h.text.includes('🔗'))
+	.slice(0, 5)
+	.map(h => ({
+		"@type": "Question",
+		"name": h.text.replace(/^[\p{Emoji_Presentation}\p{Extended_Pictographic}\s]+/u, ''),
+		"acceptedAnswer": {
+			"@type": "Answer",
+			"text": `${title}に関する詳細は本記事をご覧ください。`
+		}
+	}));
+const faqSchema = faqItems.length >= 2 ? JSON.stringify({
+	"@context": "https://schema.org",
+	"@type": "FAQPage",
+	"mainEntity": faqItems
+}) : null;
 // Breadcrumb items
 const breadcrumbItems = [
 	{ name: 'ホーム', url: '/' },
@@ -52,6 +69,7 @@ const breadcrumbItems = [
 			type="article"
 			breadcrumbs={breadcrumbItems}
 		/>
+		{faqSchema && <script type="application/ld+json" set:html={faqSchema} />}
 		<style>
 			/* ===== Article Hero ===== */
 			.article-hero {
@@ -376,6 +394,22 @@ const breadcrumbItems = [
 				}
 				.article-body {
 					padding: 2rem 1rem;
+				}
+				.article-body :global(p) {
+					font-size: 1rem;
+					line-height: 2;
+					letter-spacing: 0.02em;
+				}
+				.article-body :global(h2) {
+					font-size: 1.25rem;
+					margin-top: 2.5rem;
+				}
+				.article-body :global(h3) {
+					font-size: 1.1rem;
+				}
+				.article-body :global(li) {
+					font-size: 0.95rem;
+					line-height: 1.9;
 				}
 				.share-section {
 					padding: 0 1rem 1.5rem;
