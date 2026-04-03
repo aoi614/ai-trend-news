@@ -33,6 +33,15 @@ async function generateOgImage(title, slug, fontData, outputDir) {
   // Truncate title if too long
   const displayTitle = title.length > 40 ? title.substring(0, 38) + "…" : title;
 
+  const gradients = [
+    "linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%)",
+    "linear-gradient(135deg, #110e25 0%, #170f2a 40%, #2b1e3b 100%)",
+    "linear-gradient(135deg, #0a1715 0%, #0d221c 40%, #1c382f 100%)",
+    "linear-gradient(135deg, #1f0f15 0%, #29121a 40%, #3e1b27 100%)"
+  ];
+  const charSum = [...slug].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const bgGradient = gradients[charSum % gradients.length];
+
   const svg = await satori(
     {
       type: "div",
@@ -44,7 +53,7 @@ async function generateOgImage(title, slug, fontData, outputDir) {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          background: "linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%)",
+          background: bgGradient,
           padding: "60px",
           position: "relative",
         },

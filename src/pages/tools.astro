@@ -1,0 +1,130 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { SITE_TITLE } from '../consts';
+
+const breadcrumbs = [
+	{ name: 'ホーム', url: '/' },
+	{ name: 'おすすめAIツール', url: '/tools/' }
+];
+
+const categories = [
+    {
+        name: "📰 LLM・チャットボット",
+        tools: [
+            { name: "ChatGPT (OpenAI)", url: "https://chat.openai.com/", desc: "圧倒的シェアを誇るAI。最新のGPT-4oモデルは非常に優秀です。" },
+            { name: "Claude (Anthropic)", url: "https://claude.ai/", desc: "自然な文章生成と長文処理に優れたAI。プログラミング支援にも最適。" },
+            { name: "Gemini (Google)", url: "https://gemini.google.com/", desc: "Googleの最新AI。Google Workspaceとの連携が強力。" }
+        ]
+    },
+    {
+        name: "🎨 画像生成AI",
+        tools: [
+            { name: "Midjourney", url: "https://www.midjourney.com/", desc: "高品質で芸術的な画像を生成できるDiscordベースのAI。" },
+            { name: "Stable Diffusion", url: "https://stability.ai/", desc: "オープンソースの画像生成AI。ローカル環境でも動作可能。" },
+            { name: "Adobe Firefly", url: "https://firefly.adobe.com/", desc: "著作権フリーの学習データのみを使用した商用利用に安全なAI。" }
+        ]
+    },
+    {
+        name: "🎵 音楽・音声生成AI",
+        tools: [
+            { name: "Suno", url: "https://suno.com/", desc: "テキストから高品質な楽曲とボーカルを生成できるAI。" },
+            { name: "ElevenLabs", url: "https://elevenlabs.io/", desc: "世界最高峰のリアルな音声読み上げ・クローンAI。" }
+        ]
+    }
+];
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<BaseHead title={`おすすめAIツール集 | ${SITE_TITLE}`} description="日常や業務で活用できる、おすすめの厳選AIツール一覧です。" breadcrumbs={breadcrumbs} />
+		<style>
+			.tools-container {
+				display: grid;
+				gap: 3rem;
+			}
+			.tool-category h2 {
+				font-size: 1.5rem;
+				font-weight: 700;
+				margin-bottom: 1.5rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 2px solid rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+			}
+			.tools-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+				gap: 1.5rem;
+			}
+			.tool-card {
+				background: var(--card-bg);
+				border-radius: var(--card-radius);
+				padding: 1.5rem;
+				box-shadow: var(--card-shadow);
+				transition: transform 0.2s ease, box-shadow 0.2s ease;
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
+				text-decoration: none;
+			}
+			.tool-card:hover {
+				transform: translateY(-4px);
+				box-shadow: var(--card-shadow-hover);
+			}
+			.tool-name {
+				font-size: 1.15rem;
+				font-weight: 700;
+				color: var(--accent);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+			.tool-name::after {
+				content: "↗";
+				font-size: 0.9rem;
+				opacity: 0.5;
+			}
+			.tool-desc {
+				font-size: 0.9rem;
+				color: rgb(var(--gray));
+				line-height: 1.6;
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<div style="max-width:1200px;margin:0 auto;padding:0.5rem 1.5rem 0;">
+			<Breadcrumb items={breadcrumbs} />
+		</div>
+
+		<section class="mini-hero">
+			<h1>🛠️ おすすめAIツール集</h1>
+			<p>日常やビジネスで役立つ最新のAIサービスを厳選してご紹介します</p>
+			<div class="gradient-bar"></div>
+		</section>
+
+		<main class="content-container">
+			<div class="tools-container">
+				{categories.map((category, catIndex) => (
+					<div class="tool-category fade-in" style={`transition-delay: ${catIndex * 0.1}s;`}>
+						<h2>{category.name}</h2>
+						<div class="tools-grid">
+							{category.tools.map((tool, i) => (
+								<a href={tool.url} target="_blank" rel="noopener noreferrer" class="tool-card glass-effect fade-in" style={`transition-delay: ${(catIndex * 0.1) + (i * 0.05)}s;`}>
+									<div class="tool-name">{tool.name}</div>
+									<p class="tool-desc">{tool.desc}</p>
+								</a>
+							))}
+						</div>
+					</div>
+				))}
+			</div>
+		</main>
+
+		<Footer />
+	</body>
+</html>

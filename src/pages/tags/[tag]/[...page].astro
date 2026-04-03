@@ -44,12 +44,17 @@ for (let num = 1; num <= page.lastPage; num++) {
 		pageItems.push({ type: 'ellipsis', num, url });
 	}
 }
+const breadcrumbs = [
+	{ name: 'ホーム', url: '/' },
+	{ name: 'タグ', url: '/tags/' },
+	{ name: tag, url: `/tags/${tag}/` }
+];
 ---
 
 <!doctype html>
 <html lang="ja">
 	<head>
-		<BaseHead title={pageTitle} description={`タグ「${tag}」に関連するAIニュースやツール情報の記事一覧です。`} />
+		<BaseHead title={pageTitle} description={`タグ「${tag}」に関連するAIニュースやツール情報の記事一覧です。`} breadcrumbs={breadcrumbs} />
 		<style>
 			/* ===== Blog Grid ===== */
 			.posts-grid {
@@ -217,7 +222,7 @@ for (let num = 1; num <= page.lastPage; num++) {
 
 		<!-- Breadcrumb -->
 		<div style="max-width:1200px;margin:0 auto;padding:0.5rem 1.5rem 0;">
-			<Breadcrumb items={[{name:'ホーム',url:'/'},{name:'タグ',url:'/tags/'},{name:tag,url:`/tags/${tag}/`}]} />
+			<Breadcrumb items={breadcrumbs} />
 		</div>
 
 		<!-- Mini Hero -->
@@ -230,11 +235,11 @@ for (let num = 1; num <= page.lastPage; num++) {
 		<!-- Posts Grid -->
 		<div class="content-container">
 			<ul class="posts-grid">
-				{page.data.map((post) => (
-					<li class="post-card">
+				{page.data.map((post: any, i: number) => (
+					<li class="post-card fade-in" style={`transition-delay: ${(i % 10) * 0.05}s;`}>
 						<a href={`/blog/${post.id}/`}>
-														{post.data.heroImage ? (
-								<img width="600" height="315" src={post.data.heroImage} alt={post.data.title} style="width:100%;height:auto;" />
+							{post.data.heroImage ? (
+								<img width="600" height="315" src={post.data.heroImage} alt={post.data.title} style="width:100%;height:auto;" loading="lazy" decoding="async" />
 							) : (
 								<div style="width:100%;aspect-ratio:1200/630;background:linear-gradient(135deg,#0c1222 0%,#0f172a 40%,#1e293b 100%);display:flex;align-items:center;justify-content:center;">
 									<span style="font-size:2.5rem;">📰</span>

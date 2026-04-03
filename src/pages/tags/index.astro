@@ -13,24 +13,22 @@ const tagsWithCount = uniqueTags.map((tag) => {
 	const count = posts.filter((post) => post.data.tags?.includes(tag)).length;
 	return { tag, count };
 }).sort((a, b) => b.count - a.count);
+
+const breadcrumbs = [
+	{ name: 'ホーム', url: '/' },
+	{ name: 'タグ一覧', url: '/tags/' }
+];
 ---
 
 <!doctype html>
 <html lang="ja">
 	<head>
-		<BaseHead title={`タグ一覧 | ${SITE_TITLE}`} description="AIトレンド速報の記事タグ一覧" />
+		<BaseHead title={`タグ一覧 | ${SITE_TITLE}`} description="AIトレンド速報の記事タグ一覧" breadcrumbs={breadcrumbs} />
 		<style>
-			main {
+			.content-container {
 				max-width: 960px;
 				margin: 0 auto;
-				padding: 3rem 1rem;
-			}
-			h1 {
-				font-size: 2rem;
-				font-weight: 700;
-				margin-bottom: 2rem;
-				text-align: center;
-				color: var(--dark-text);
+				padding: 3rem 1.5rem;
 			}
 			.tags-grid {
 				display: grid;
@@ -70,11 +68,17 @@ const tagsWithCount = uniqueTags.map((tag) => {
 	</head>
 	<body>
 		<Header />
-		<main>
+		
+		<section class="mini-hero">
 			<h1>🏷️ タグ一覧</h1>
+			<p>関心のあるトピックから記事を探せます({uniqueTags.length}個のタグ)</p>
+			<div class="gradient-bar"></div>
+		</section>
+
+		<main class="content-container">
 			<div class="tags-grid">
-				{tagsWithCount.map(({ tag, count }) => (
-					<a href={`/tags/${tag}/`} class="tag-card">
+				{tagsWithCount.map(({ tag, count }, i) => (
+					<a href={`/tags/${tag}/`} class="tag-card fade-in glass-effect" style={`transition-delay: ${(i % 15) * 0.05}s;`}>
 						<span class="tag-name">#{tag}</span>
 						<span class="tag-count">{count}</span>
 					</a>

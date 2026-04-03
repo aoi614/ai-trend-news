@@ -23,5 +23,9 @@
     "rss-parser": "^3.13.0",
     "satori": "^0.26.0",
     "sharp": "^0.34.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.8",
+    "typescript": "^5.9.3"
   }
 }

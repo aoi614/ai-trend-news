@@ -36,6 +36,15 @@ async function generateOgImage(title, slug, fontData, outputDir) {
   else if (title.length > 30) fontSize = 42;
   else if (title.length > 20) fontSize = 48;
 
+  const gradients = [
+    "linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%)",
+    "linear-gradient(135deg, #110e25 0%, #170f2a 40%, #2b1e3b 100%)",
+    "linear-gradient(135deg, #0a1715 0%, #0d221c 40%, #1c382f 100%)",
+    "linear-gradient(135deg, #1f0f15 0%, #29121a 40%, #3e1b27 100%)"
+  ];
+  const charSum = [...slug].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const bgGradient = gradients[charSum % gradients.length];
+
   const svg = await satori(
     {
       type: "div",
@@ -43,7 +52,7 @@ async function generateOgImage(title, slug, fontData, outputDir) {
         style: {
           width: "100%", height: "100%", display: "flex", flexDirection: "column",
           justifyContent: "center", alignItems: "center",
-          background: "linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%)",
+          background: bgGradient,
           padding: "60px 80px", position: "relative",
         },
         children: [
@@ -88,20 +97,26 @@ async function getExistingArticles() {
   }
 }
 
-// ===== Topic Diversity: Rotate RSS queries by day =====
-function getTodayQuery() {
+// ===== Topic Diversity: Rotate RSS queries =====
+function getRandomQuery() {
   const queries = [
     'AI 最新ニュース 2026',
-    'ChatGPT OR Claude OR Gemini 新機能',
-    '生成AI ビジネス 活用',
-    'オープンソース AI LLM',
-    'AI 規制 法律 ガイドライン',
-    'AI 画像生成 動画生成 音楽',
-    'AI スタートアップ 資金調達',
+    'ChatGPT 新機能 アップデート',
+    'Claude 3 Anthropic 活用',
+    'Gemini Google AI ニュース',
+    '生成AI ビジネス 導入事例',
+    'オープンソース LLM Llama',
+    'AI 著作権 規制 法律',
+    'AI 画像生成 OR 動画生成 最新',
+    'AI スタートアップ 資金調達日本',
+    'AI プログラミング 開発ツール',
+    'AI エージェント 自動化',
+    'ロボティクス AI 最新動向',
+    'AI PC スマホ デバイス',
+    'AI 音楽生成 音声アシスタント'
   ];
-  const dayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon, ...
-  const query = queries[dayOfWeek];
-  console.log(`📅 Today's query theme (day ${dayOfWeek}): ${query}`);
+  const query = queries[Math.floor(Math.random() * queries.length)];
+  console.log(`🎯 Selected query theme: ${query}`);
   return query;
 }
 
@@ -120,7 +135,7 @@ async function generateArticle() {
   // --- Fetch Latest AI News from Google News RSS (with topic rotation) ---
   console.log("Fetching latest AI news from Google News RSS...");
   const parser = new Parser();
-  const queryStr = encodeURIComponent(getTodayQuery());
+  const queryStr = encodeURIComponent(getRandomQuery());
   const feed = await parser.parseURL(`https://news.google.com/rss/search?q=${queryStr}&hl=ja&gl=JP&ceid=JP:ja`);
   
   // Extract top 15 most recent headlines (wider net)
@@ -178,6 +193,7 @@ async function generateArticle() {
     5. Do not write a generic dictionary-style explanation. Write it as a "Hot News/Review" column.
     6. Use varied sentence structures. Mix short punchy sentences with longer analytical ones.
     7. Include specific numbers, dates, or data points when available to add credibility.
+    8. **RICH FORMATTING**: You MUST include at least one Markdown table (e.g., comparing features, pricing, or pros/cons). Also include concrete examples with bullet points.
     
     ### SEO OPTIMIZATION:
     1. The description should be 120-160 characters, containing the primary keyword naturally.

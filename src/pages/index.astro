@@ -408,17 +408,17 @@ const popularPosts = [...allPosts].reverse().slice(0, 3);
 
 		<!-- Feature Cards -->
 		<div class="features">
-			<div class="feature-card">
+			<div class="feature-card fade-in glass-effect">
 				<div class="feature-icon">⚡</div>
 				<h3>毎日更新</h3>
 				<p>最新のAIニュースを毎日チェックして記事にまとめています</p>
 			</div>
-			<div class="feature-card">
+			<div class="feature-card fade-in glass-effect" style="transition-delay: 0.1s;">
 				<div class="feature-icon">🎯</div>
 				<h3>注目トピックを深掘り</h3>
 				<p>話題のAIツールや業界の動きをピックアップして解説</p>
 			</div>
-			<div class="feature-card">
+			<div class="feature-card fade-in glass-effect" style="transition-delay: 0.2s;">
 				<div class="feature-icon">📖</div>
 				<h3>読みやすさ重視</h3>
 				<p>専門用語もかみ砕いて、サクッと読める記事を目指しています</p>
@@ -432,16 +432,16 @@ const popularPosts = [...allPosts].reverse().slice(0, 3);
 				<a href="/blog">すべての記事を見る →</a>
 			</div>
 			<ul class="posts-grid">
-				{latestPosts.map((post) => (
-					<li class="post-card">
+				{latestPosts.map((post, i) => (
+					<li class="post-card fade-in" style={`transition-delay: ${i * 0.05}s;`}>
 						<a href={`/blog/${post.id}/`}>
-													{post.data.heroImage ? (
-							<img width="600" height="315" src={post.data.heroImage} alt={post.data.title} style="width:100%;height:auto;" />
-						) : (
-							<div style="width:100%;aspect-ratio:1200/630;background:linear-gradient(135deg,#0c1222 0%,#0f172a 40%,#1e293b 100%);display:flex;align-items:center;justify-content:center;">
-								<span style="font-size:2.5rem;">📰</span>
-							</div>
-						)}
+							{post.data.heroImage ? (
+								<img width="600" height="315" src={post.data.heroImage} alt={post.data.title} style="width:100%;height:auto;" loading="lazy" decoding="async" />
+							) : (
+								<div style="width:100%;aspect-ratio:1200/630;background:linear-gradient(135deg,#0c1222 0%,#0f172a 40%,#1e293b 100%);display:flex;align-items:center;justify-content:center;">
+									<span style="font-size:2.5rem;">📰</span>
+								</div>
+							)}
 							<div class="post-card-body">
 								<p class="date">
 									<FormattedDate date={post.data.pubDate} />
@@ -469,7 +469,7 @@ const popularPosts = [...allPosts].reverse().slice(0, 3);
 			</div>
 			<ul class="popular-grid">
 				{popularPosts.map((post, i) => (
-					<li class="popular-card">
+					<li class="popular-card fade-in" style={`transition-delay: ${i * 0.05}s;`}>
 						<a href={`/blog/${post.id}/`}>
 							<span class="popular-rank">{i + 1}</span>
 							<span class="popular-card-title">{post.data.title}</span>

@@ -591,7 +591,7 @@ const breadcrumbItems = [
 					</div>
 					{heroImage && (
 						<div class="article-hero-image">
-							<img width="1020" height="510" src={heroImage} alt="" loading="eager" style="width:100%;height:auto;border-radius:12px;" />
+							<img width="1020" height="510" src={heroImage} alt="" loading="eager" fetchpriority="high" decoding="async" style="width:100%;height:auto;border-radius:12px;" />
 						</div>
 					)}
 				</div>
@@ -678,7 +678,7 @@ const breadcrumbItems = [
 								<a class="related-card" href={`/blog/${post.id}/`}>
 									{post.data.heroImage ? (
 										<div class="related-card-image">
-											<img width="400" height="225" src={post.data.heroImage} alt="" style="width:100%;height:auto;" />
+											<img width="400" height="225" src={post.data.heroImage} alt="" loading="lazy" decoding="async" style="width:100%;height:auto;" />
 										</div>
 									) : (
 										<div class="related-card-image"></div>
