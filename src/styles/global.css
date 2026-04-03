@@ -62,9 +62,19 @@
 	font-display: swap;
 }
 
+/* Fallback font to minimize CLS while Noto Sans JP loads */
+@font-face {
+	font-family: "Noto Sans JP Fallback";
+	src: local("Hiragino Sans"), local("Hiragino Kaku Gothic ProN"), local("Yu Gothic"), local("Meiryo"), local("sans-serif");
+	size-adjust: 100%;
+	ascent-override: 97%;
+	descent-override: 25%;
+	line-gap-override: 0%;
+}
+
 /* ===== Base ===== */
 body {
-	font-family: "Noto Sans JP", "Atkinson", sans-serif;
+	font-family: "Noto Sans JP", "Noto Sans JP Fallback", "Atkinson", system-ui, sans-serif;
 	margin: 0;
 	padding: 0;
 	text-align: left;
@@ -75,6 +85,9 @@ body {
 	transition: background 0.3s ease, color 0.3s ease;
 	font-size: 20px;
 	line-height: 1.7;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-rendering: optimizeLegibility;
 }
 main {
 	width: 100%;

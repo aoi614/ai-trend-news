@@ -97,13 +97,16 @@ const breadcrumbData = breadcrumbs ? {
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-<!-- Google Fonts: Noto Sans JP (preload for performance) -->
+<!-- Performance: Preconnect & DNS Prefetch -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" /></noscript>
+
+<!-- Google Fonts: Non-blocking async load with font-display:swap -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" /></noscript>
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
@@ -155,10 +158,19 @@ window.addEventListener('load', function() {
 });
 </script>
 
-<!-- Google AdSense - exact snippet for verification -->
+<!-- Google AdSense - deferred loading for Core Web Vitals -->
 <meta name="google-adsense-account" content="ca-pub-8204767432830277">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8204767432830277"
-     crossorigin="anonymous"></script>
+<script is:inline>
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    var s = document.createElement('script');
+    s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8204767432830277';
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    document.head.appendChild(s);
+  }, 2000);
+});
+</script>
 
 <!-- Initialize Theme -->
 <script is:inline>

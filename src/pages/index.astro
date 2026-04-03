@@ -28,6 +28,8 @@ const popularPosts = [...allPosts].reverse().slice(0, 3);
 				background: linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%);
 				text-align: center;
 				color: #f1f5f9;
+				min-height: 420px;
+				contain: layout style;
 			}
 			.hero::before {
 				content: '';
@@ -436,7 +438,7 @@ const popularPosts = [...allPosts].reverse().slice(0, 3);
 					<li class="post-card fade-in" style={`transition-delay: ${i * 0.05}s;`}>
 						<a href={`/blog/${post.id}/`}>
 							{post.data.heroImage ? (
-								<img width="600" height="315" src={post.data.heroImage} alt={post.data.title} style="width:100%;height:auto;" loading="lazy" decoding="async" />
+								<img width="600" height="315" src={post.data.heroImage} alt={post.data.title} style="width:100%;height:auto;" loading={i < 2 ? "eager" : "lazy"} decoding={i < 2 ? "sync" : "async"} fetchpriority={i === 0 ? "high" : undefined} />
 							) : (
 								<div style="width:100%;aspect-ratio:1200/630;background:linear-gradient(135deg,#0c1222 0%,#0f172a 40%,#1e293b 100%);display:flex;align-items:center;justify-content:center;">
 									<span style="font-size:2.5rem;">📰</span>
