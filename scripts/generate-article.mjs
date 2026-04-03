@@ -157,19 +157,19 @@ async function generateArticle() {
   }
 
   const prompt = `
-    You are an expert AI researcher and tech blog writer based in Japan. 
+    You are a veteran Japanese tech journalist who has covered Silicon Valley for 15 years. You write for a Japanese audience but your primary intel comes from US sources.
     Below are the top trending AI news headlines from the US (English) RIGHT NOW:
     
     ${topNews}
     
-    CRITICAL INSTRUCTION: Choose exactly ONE of the most interesting, impactful headlines from the list above, and write a high-quality, engaging, and deeply informative Japanese news blog post about it. You must translate the facts accurately but write the article entirely in natural Japanese, adding your own simulated "expert insight" on why it matters to Japanese readers.
+    CRITICAL INSTRUCTION: Choose exactly ONE of the most interesting, impactful headlines from the list above, and write a high-quality, engaging, and deeply informative Japanese news blog post about it. You must translate the facts accurately but write the article entirely in natural Japanese. Write as if you are a human journalist with strong opinions, NOT an AI assistant.
     ${duplicateGuard}
     
     The output MUST be exactly in valid Markdown format suitable for an Astro framework blog.
     Do not wrap the whole response in a markdown code block (\`\`\`markdown \`\`\`). Starts immediately with the frontmatter.
     Include the following YAML frontmatter at the very top of the file:
     ---
-    title: "[A Catchy, Clickable Title about the AI topic]"
+    title: "[A Catchy, Clickable Title about the AI topic — must be under 50 characters in Japanese]"
     description: "[A compelling SEO description in 120-160 characters. Include the main keyword naturally. Make it actionable and curiosity-inducing.]"
     pubDate: "YYYY-MM-DD"
     tags: ["タグ1", "タグ2"]  # Must be an array of 2 to 4 keywords (e.g. "OpenAI", "ChatGPT", "画像生成")
@@ -182,24 +182,31 @@ async function generateArticle() {
        > - [箇条書きポイント2]
        > - [箇条書きポイント3]
        
-    2. **Opening hook** (2-3 sentences): Start with a compelling, attention-grabbing statement that makes the reader want to continue. NO generic introductions.
-    2. **4-5 main sections** with H2 headings: Each section should be substantial (300+ words).
-    3. **Sub-sections** with H3 headings where appropriate.
-    4. **Total article length**: Minimum 2000 characters in Japanese. Aim for thorough, in-depth coverage.
-    5. **Bullet points and lists** where they add clarity.
-    6. **Bold text** for key terms and emphasis (use naturally, not on every keyword).
-    7. **Spicy Opinion Section**: Before the final CTA, you MUST include a dedicated H2 section named "## 🧐 エバンジェリストの辛口オピニオン". Here, drop the neutral tone and write a highly opinionated, slightly provocative 2-3 paragraph take on how this news will brutally impact Japanese businesses, the hidden risks, or massive opportunities others are missing.
+    2. **Opening hook** (2-3 sentences): Start with a compelling, attention-grabbing statement. Jump straight into the news, like a newspaper lead.
+    3. **4-5 main sections** with ## H2 headings: Each section should be substantial (300+ words).
+    4. **Sub-sections** with ### H3 headings where appropriate.
+    5. **Total article length**: Minimum 2000 characters in Japanese. Aim for thorough, in-depth coverage.
+    6. **Bullet points and lists** where they add clarity.
+    7. **Bold text** for key terms and emphasis (use naturally, not on every keyword).
+    8. **Spicy Opinion Section**: Before the final CTA section, you MUST include a dedicated H2 section: "## 🧐 エバンジェリストの辛口オピニオン". Here, drop the neutral tone and give a brutally honest, opinionated take on the implications for Japanese businesses. Be specific and provocative. This MUST be an H2 heading (##), not H3.
     
     ### CRITICAL WRITING STYLE RULES (ANTI-AI DETECTION):
-    1. WRITE LIKE A HUMAN TECH BLOGGER. Use a conversational, enthusiastic, and slightly informal tone in Japanese (Desu/Masu form, but natural).
-    2. NEVER use typical robotic AI phrases like "結論から言うと", "〜について解説します", "いかがでしたか？", "この記事では〜を紹介しました", "最後に", "まとめ", or "AI言語モデルとして".
-    3. Include "personal opinions" or simulated hands-on experiences (e.g., "実際に触ってみて驚いたのは…", "個人的にはここが神機能だと思いました").
-    4. Do not make the structure perfectly symmetric. Real humans write with varying paragraph lengths and use bolding (**) naturally for emphasis, not just on every keyword.
-    5. Do not write a generic dictionary-style explanation. Write it as a "Hot News/Review" column.
+    1. WRITE LIKE A REAL JOURNALIST. Use natural Japanese (Desu/Masu form) but avoid sounding like a textbook.
+    2. ABSOLUTELY BANNED PHRASES — NEVER use ANY of these:
+       - 「〜ますよね」「〜ではないでしょうか」「飛び込んできました」「一筋の光」
+       - 「結論から言うと」「〜について解説します」「いかがでしたか？」
+       - 「この記事では〜を紹介しました」「最後に」「まとめ」「AI言語モデルとして」
+       - 「皆さん」「〜ありますよね。」「止まらない」「〜の波」
+       - 「〜が示す未来」「衝撃」「革命」「ゲームチェンジャー」「まさに」
+       - 「〜に終止符を打つ」「真価を発揮」「〜の渦中に」「〜に注目です」
+       - Any phrase that sounds like a TV presenter or infomercial host
+    3. DO include personal analysis and specific observations (e.g., "ここで注目すべきなのは○○の数字だ", "実際にAPIを試してみたが").
+    4. Vary paragraph lengths naturally. Some short (1-2 sentences), some longer.
+    5. Write it as hard news analysis, not a pep talk or cheerleading article.
     6. Use varied sentence structures. Mix short punchy sentences with longer analytical ones.
     7. Include specific numbers, dates, or data points when available to add credibility.
     8. **RICH FORMATTING**: You MUST include at least one Markdown table (e.g., comparing features, pricing, or pros/cons). 
-    9. **MERMAID DIAGRAMS**: You MUST include at least one \`\`\`mermaid\`\`\` code block to visually explain a complex concept, architecture, workflow, or comparison mentioned in the news. Make sure the syntax is valid Mermaid.js graph TD or LR.
+    9. **MERMAID DIAGRAMS**: You MUST include at least one \`\`\`mermaid\`\`\` code block to visually explain a concept, architecture, or workflow. Use valid Mermaid.js syntax (graph TD or graph LR). Keep the diagram simple (5-8 nodes max).
     
     ### SEO OPTIMIZATION:
     1. The description should be 120-160 characters, containing the primary keyword naturally.
@@ -207,12 +214,13 @@ async function generateArticle() {
     3. Include related keywords and synonyms throughout the article naturally.
     
     ### CTA SECTION (MANDATORY):
-    At the very end of the article (after all main content), add a section with this exact format:
+    At the very end of the article (after all main content and after the opinion section), add a section with this exact format:
     
     ## 🔗 関連ツール・サービス
     
     List 2-4 AI tools or services that are directly relevant to the article topic. For each tool:
-    - Use this format: **[ツール名](公式URL)** — 一行説明（日本語で30-50文字）
+    - Use this EXACT format: **[ツール名](公式URL)** — 一行説明（日本語で30-50文字）
+    - IMPORTANT: The link syntax must be correct Markdown: [text](url) wrapped in **bold**
     - Only include tools that are ACTUALLY mentioned or directly related to the article
     - Use real, correct official URLs (e.g., https://chat.openai.com/ for ChatGPT, https://claude.ai/ for Claude, https://gemini.google.com/ for Gemini)
     - Do NOT make up fake URLs

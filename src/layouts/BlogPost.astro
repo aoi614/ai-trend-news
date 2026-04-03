@@ -82,10 +82,9 @@ if (tags && tags.length > 0) {
 }
 // 重複排除して最大2件まで
 matchedAffiliates = [...new Set(matchedAffiliates)].slice(0, 2);
-// もし1件も見つからなければデフォルト商材を提案
-if (matchedAffiliates.length === 0) {
-	matchedAffiliates.push(affiliateMap['ChatGPT']!);
-}
+// プレースホルダーURL（sample, ref=ai-trend）を含むものは表示しない
+matchedAffiliates = matchedAffiliates.filter(a => !a.url.includes('sample') && !a.url.includes('ref=ai-trend'));
+// もし1件も見つからなければ空のまま（本番URLが設定されるまで非表示）
 ---
 
 <html lang="ja">

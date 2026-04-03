@@ -30,8 +30,8 @@ export async function loadFont() {
 
 // Generate OG image for a single article
 export async function generateOgImage(title, slug, fontData, outputDir) {
-  // Truncate title if too long
-  const displayTitle = title.length > 40 ? title.substring(0, 38) + "…" : title;
+  // Truncate title if too long (Japanese titles tend to be longer)
+  const displayTitle = title.length > 60 ? title.substring(0, 58) + "…" : title;
 
   const gradients = [
     "linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%)",
@@ -131,7 +131,7 @@ export async function generateOgImage(title, slug, fontData, outputDir) {
             type: "div",
             props: {
               style: {
-                fontSize: title.length > 25 ? "42px" : "52px",
+                fontSize: title.length > 40 ? "36px" : title.length > 25 ? "42px" : "52px",
                 fontWeight: 700,
                 color: "#f1f5f9",
                 textAlign: "center",
