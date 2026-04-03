@@ -206,6 +206,7 @@ async function generateArticle() {
     Include the following YAML frontmatter at the very top of the file:
     ---
     title: "[MUST follow these rules: (1) Under 45 chars in Japanese, (2) Use one of these proven patterns: 数字型「○○が△△%向上」/ 対比型「○○ vs △△」/ 問題提起型「なぜ○○は△△なのか」/ 衝撃事実型「○○、実は△△だった」, (3) Include the specific product/company name, (4) Do NOT use generic buzzwords like '衝撃' '革命' '未来']"
+    titleB: "[A/B TEST VARIANT: Write a COMPLETELY DIFFERENT style title for the same article. If title uses 数字型, titleB must use 問題提起型 or 対比型. Must be different emotional hook but same factual content. Under 45 chars.]"
     description: "[A compelling SEO description in 120-160 characters. Include the main keyword naturally. Make it actionable and curiosity-inducing.]"
     pubDate: "YYYY-MM-DD"
     tags: ["タグ1", "タグ2"]  # Must be an array of 2 to 4 keywords (e.g. "OpenAI", "ChatGPT", "画像生成")

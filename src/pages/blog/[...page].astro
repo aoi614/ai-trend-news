@@ -245,7 +245,11 @@ const breadcrumbs = [
 										))}
 									</div>
 								)}
-								<h3>{post.data.title}</h3>
+								<h3
+									data-title-a={post.data.title}
+									data-title-b={post.data.titleB || ""}
+									data-slug={post.id}
+								>{post.data.title}</h3>
 								<p class="description">{post.data.description}</p>
 							</div>
 						</a>
@@ -282,5 +286,54 @@ const breadcrumbs = [
 		</div>
 
 		<Footer />
+
+		<script is:inline>
+		// A/B テストロジック: titleB があるカードのタイトルをランダム切替 + GA4計測
+		(function() {
+			const cards = document.querySelectorAll('h3[data-title-b]');
+			cards.forEach(h3 => {
+				const titleB = h3.getAttribute('data-title-b');
+				if (!titleB) return; // titleBなし → A/Bテスト対象外
+
+				const slug = h3.getAttribute('data-slug') || '';
+				const storageKey = `ab_${slug}`;
+
+				// セッション中は同じバリアントを維持（一貫したUX）
+				let variant = sessionStorage.getItem(storageKey);
+				if (!variant) {
+					variant = Math.random() < 0.5 ? 'A' : 'B';
+					sessionStorage.setItem(storageKey, variant);
+				}
+
+				if (variant === 'B') {
+					h3.textContent = titleB;
+				}
+
+				// クリック計測: GA4にカスタムイベントを送信
+				const link = h3.closest('a');
+				if (link) {
+					link.addEventListener('click', function() {
+						if (typeof gtag === 'function') {
+							gtag('event', 'ab_title_click', {
+								event_category: 'A/B Test',
+								event_label: slug,
+								ab_variant: variant,
+								ab_title: variant === 'A' ? h3.getAttribute('data-title-a') : titleB,
+							});
+						}
+					});
+				}
+
+				// インプレッション計測
+				if (typeof gtag === 'function') {
+					gtag('event', 'ab_title_impression', {
+						event_category: 'A/B Test',
+						event_label: slug,
+						ab_variant: variant,
+					});
+				}
+			});
+		})();
+		</script>
 	</body>
 </html>
