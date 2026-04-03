@@ -94,3 +94,11 @@ jobs:
           else
             echo "⏩ GOOGLE_INDEXING_KEY not set, skipping indexing notification"
           fi
+
+      - name: Submit to IndexNow & Social Platforms
+        if: steps.commit.outputs.has_changes == 'true' && steps.commit.outputs.slug != ''
+        run: |
+          SLUG="${{ steps.commit.outputs.slug }}"
+          echo "🚀 Submitting $SLUG to IndexNow, Bing, Yandex, and social platforms..."
+          node scripts/auto-submit.mjs "$SLUG" || true
+          echo "✅ Auto-submit completed"
