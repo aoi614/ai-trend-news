@@ -27,7 +27,7 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	headings?: Heading[];
 };
 
-const { title, description, pubDate, updatedDate, heroImage, slug, relatedPosts = [], readingTime, headings = [], tags = [] } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, slug, relatedPosts = [], readingTime, headings = [], tags = [], tldr } = Astro.props;
 
 const pageUrl = Astro.url.href;
 const encodedUrl = encodeURIComponent(pageUrl);
@@ -146,6 +146,35 @@ matchedAffiliates = matchedAffiliates.filter(a => !a.url.includes('sample') && !
 				line-height: 1.4;
 				color: var(--dark-text);
 				margin: 0 0 1rem;
+			}
+			.article-tldr {
+				background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(56, 189, 248, 0.03) 100%);
+				border: 1px solid rgba(14, 165, 233, 0.2);
+				border-radius: 12px;
+				padding: 1.5rem;
+				margin: 2rem auto;
+				max-width: 760px;
+			}
+			.article-tldr-title {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				font-size: 1.1rem;
+				font-weight: 700;
+				color: #0ea5e9;
+				margin-bottom: 1rem;
+			}
+			.article-tldr ul {
+				margin: 0;
+				padding-left: 1.5rem;
+				color: var(--dark-text);
+				line-height: 1.6;
+			}
+			.article-tldr li {
+				margin-bottom: 0.5rem;
+			}
+			.article-tldr li:last-child {
+				margin-bottom: 0;
 			}
 			.article-tags {
 				display: flex;
@@ -649,6 +678,21 @@ matchedAffiliates = matchedAffiliates.filter(a => !a.url.includes('sample') && !
 				</div>
 				<div class="article-gradient-bar"></div>
 
+				{tldr && tldr.length > 0 && (
+					<div style="max-width: 760px; margin: 0 auto; padding: 0 1.5rem;">
+						<div class="article-tldr">
+							<div class="article-tldr-title">
+								<span style="font-size: 1.2rem;">💡</span> 3行でわかる！この記事のポイント
+							</div>
+							<ul>
+								{tldr.map((point: string) => (
+									<li>{point.replace(/^-\s*/, '')}</li>
+								))}
+							</ul>
+						</div>
+					</div>
+				)}
+
 				<!-- Ad: Top of article -->
 				<div style="max-width: 760px; margin: 0 auto; padding: 0 1.5rem;">
 					<AdInsert />
@@ -851,7 +895,53 @@ matchedAffiliates = matchedAffiliates.filter(a => !a.url.includes('sample') && !
 				});
 			}
 
-			// 4. Next Article Popup
+			// 4. Code Block Copy Button
+			const preBlocks = document.querySelectorAll('pre');
+			preBlocks.forEach((pre) => {
+				if (pre.querySelector('.copy-btn')) return;
+				
+				pre.style.position = 'relative';
+				const copyBtn = document.createElement('button');
+				copyBtn.className = 'copy-btn';
+				copyBtn.innerHTML = 'コピー';
+				
+				Object.assign(copyBtn.style, {
+					position: 'absolute',
+					top: '0.5rem',
+					right: '0.5rem',
+					padding: '0.3rem 0.6rem',
+					fontSize: '0.75rem',
+					color: '#f8fafc',
+					background: 'rgba(255,255,255,0.1)',
+					border: '1px solid rgba(255,255,255,0.2)',
+					borderRadius: '6px',
+					cursor: 'pointer',
+					backdropFilter: 'blur(4px)',
+					transition: 'all 0.2s',
+				});
+				copyBtn.addEventListener('mouseenter', () => copyBtn.style.background = 'rgba(255,255,255,0.2)');
+				copyBtn.addEventListener('mouseleave', () => copyBtn.style.background = 'rgba(255,255,255,0.1)');
+
+				copyBtn.addEventListener('click', async () => {
+					const code = pre.querySelector('code');
+					if (!code) return;
+					try {
+						await navigator.clipboard.writeText(code.innerText);
+						copyBtn.innerHTML = '✅ コピー済';
+						Object.assign(copyBtn.style, { background: 'rgba(16, 185, 129, 0.2)', borderColor: '#10b981' });
+						setTimeout(() => {
+							copyBtn.innerHTML = 'コピー';
+							Object.assign(copyBtn.style, { background: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' });
+						}, 2000);
+					} catch (err) {
+						console.error('Copy failed', err);
+						copyBtn.innerHTML = '❌ 失敗';
+					}
+				});
+				pre.appendChild(copyBtn);
+			});
+
+			// 5. Next Article Popup
 			const popup = document.getElementById('next-article-popup');
 			const closeBtn = document.getElementById('next-article-close');
 			if (popup) {

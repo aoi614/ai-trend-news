@@ -11,6 +11,7 @@ const blog = defineCollection({
 			title: z.string(),
 			titleB: z.string().optional(), // A/B test alternative title
 			description: z.string(),
+			tldr: z.array(z.string()).optional(), // TL;DR 3-bullet points
 			// Transform string to Date object
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),

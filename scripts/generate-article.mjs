@@ -210,14 +210,14 @@ async function generateArticle() {
     description: "[A compelling SEO description in 120-160 characters. Include the main keyword naturally. Make it actionable and curiosity-inducing.]"
     pubDate: "YYYY-MM-DD"
     tags: ["タグ1", "タグ2"]  # Must be an array of 2 to 4 keywords (e.g. "OpenAI", "ChatGPT", "画像生成")
+    tldr:
+      - "[箇条書きポイント1: 記事の最も重要な結論を簡潔に]"
+      - "[箇条書きポイント2: それがどう重要なのか、どう影響するのか]"
+      - "[箇条書きポイント3: 読者にとってのアクションや示唆]"
     ---
     
     ### ARTICLE STRUCTURE REQUIREMENTS:
-    1. **TL;DR Block (3行まとめ)**: IMMEDIATELY after the frontmatter, write exactly 3 bullet points summarizing the article concisely. You MUST use exactly this format (with the blockquote):
-       > **💡 この記事のポイント**
-       > - [箇条書きポイント1]
-       > - [箇条書きポイント2]
-       > - [箇条書きポイント3]
+    1. **Introduction**: Start with a very strong, hook-driven opening paragraph that immediately tells the reader WHY they should care about this news. (Do NOT write the TL;DR bullet points in the markdown body since they are in the frontmatter now).
        
     2. **Opening hook** (2-3 sentences): Start with a compelling, attention-grabbing statement. Jump straight into the news, like a newspaper lead.
     3. **4-5 main sections** with ## H2 headings: Each section should be substantial (300+ words).

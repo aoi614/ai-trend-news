@@ -299,12 +299,17 @@
 		const btnSpan = document.querySelector('#submit-btn span');
 		
 		if (form) {
-			form.addEventListener('submit', function(e) {
+			// 実際のAPIエンドポイント（各自のFormspree ID等に書き換えてください）
+			const endpoint = 'https://formspree.io/f/YOUR_FORM_ID';
+
+			form.addEventListener('submit', async function(e) {
 				e.preventDefault();
 				const email = document.getElementById('email-input').value;
 				
 				// 登録中のローディング状態
 				if(btnSpan) btnSpan.textContent = '送信中...';
+				const submitBtn = document.getElementById('submit-btn');
+				if(submitBtn) submitBtn.disabled = true;
 				
 				// GA4コンバージョンイベント（設定されていれば）
 				if (typeof gtag === 'function') {
@@ -314,17 +319,32 @@
 					});
 				}
 
-				// 疑似的な非同期処理（後で実際のAPIに置き換え可能）
-				setTimeout(() => {
+				try {
+					// 実際の送信処理（エンドポイントが設定されている場合のみ）
+					if (endpoint && !endpoint.includes('YOUR_FORM_ID')) {
+						await fetch(endpoint, {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ email: email })
+						});
+					} else {
+						// エンドポイント未設定時はモック（デモ）の遅延のみ行う
+						await new Promise(r => setTimeout(r, 800));
+					}
+
 					form.classList.add('fade-out');
 					
 					setTimeout(() => {
 						successMessage.classList.add('visible');
 					}, 300);
 					
-					// フォームクリア
 					form.reset();
-				}, 800);
+				} catch (err) {
+					console.error('Subscription error', err);
+					if(btnSpan) btnSpan.textContent = 'エラーが発生しました';
+				} finally {
+					if(submitBtn) submitBtn.disabled = false;
+				}
 			});
 		}
 	})();
