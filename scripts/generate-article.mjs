@@ -98,23 +98,59 @@ async function getExistingArticles() {
 }
 
 // ===== Topic Diversity: Rotate RSS queries =====
-function getRandomQuery() {
-  const queries = [
-    'AI news 2026',
-    'OpenAI ChatGPT update',
-    'Anthropic Claude 3 AI',
-    'Google Gemini AI',
-    'Generative AI startup funding',
-    'Open source LLM Llama',
-    'AI copyright regulation law',
-    'AI image video generation latest',
-    'AI programming tools developer',
-    'AI agents automation',
-    'Robotics AI news',
-    'AI hardware PC mobile',
-    'Local LLM open weights'
-  ];
-  const query = queries[Math.floor(Math.random() * queries.length)];
+const STATIC_QUERIES = [
+  'AI news 2026',
+  'OpenAI ChatGPT update',
+  'Anthropic Claude 3 AI',
+  'Google Gemini AI',
+  'Generative AI startup funding',
+  'Open source LLM Llama',
+  'AI copyright regulation law',
+  'AI image video generation latest',
+  'AI programming tools developer',
+  'AI agents automation',
+  'Robotics AI news',
+  'AI hardware PC mobile',
+  'Local LLM open weights'
+];
+
+// Google Trendsの急上昇キーワード（日本）を取得してAI関連のものを抽出
+async function getTrendingAIKeywords() {
+  try {
+    const parser = new Parser();
+    const trendsFeed = await parser.parseURL('https://trends.google.co.jp/trending/rss?geo=JP');
+    const allTrends = trendsFeed.items.map(item => item.title).slice(0, 20);
+    
+    // AI関連のトレンドを優先的に抽出
+    const aiKeywords = ['AI', 'ChatGPT', 'GPT', 'Gemini', 'Claude', 'OpenAI', 'Google', 'Apple', 'Microsoft', 'Meta', 'テック', 'プログラミング', 'ロボット', '自動', 'DeepSeek'];
+    const aiTrends = allTrends.filter(t => aiKeywords.some(kw => t.includes(kw)));
+    
+    if (aiTrends.length > 0) {
+      const picked = aiTrends[Math.floor(Math.random() * aiTrends.length)];
+      console.log(`🔥 Google Trends急上昇キーワード発見: "${picked}"`);
+      return `${picked} AI`;
+    }
+    
+    // AI関連がなければ一般のトレンド + AIで検索
+    if (allTrends.length > 0) {
+      const picked = allTrends[Math.floor(Math.random() * Math.min(5, allTrends.length))];
+      console.log(`📈 トレンドキーワード使用: "${picked}" + AI`);
+      return `${picked} AI technology`;
+    }
+  } catch (err) {
+    console.log(`⚠️ Google Trends取得スキップ: ${err.message}`);
+  }
+  return null;
+}
+
+async function getRandomQuery() {
+  // 3回に1回はGoogle Trendsから取得（SEOトレンド狙い）
+  if (Math.random() < 0.33) {
+    const trendQuery = await getTrendingAIKeywords();
+    if (trendQuery) return trendQuery;
+  }
+  
+  const query = STATIC_QUERIES[Math.floor(Math.random() * STATIC_QUERIES.length)];
   console.log(`🎯 Selected query theme: ${query}`);
   return query;
 }
@@ -134,7 +170,7 @@ async function generateArticle() {
   // --- Fetch Latest AI News from Google News RSS (with topic rotation) ---
   console.log("Fetching latest AI news from Google News RSS...");
   const parser = new Parser();
-  const queryStr = encodeURIComponent(getRandomQuery());
+  const queryStr = encodeURIComponent(await getRandomQuery());
   const feed = await parser.parseURL(`https://news.google.com/rss/search?q=${queryStr}&hl=en-US&gl=US&ceid=US:en`);
   
   // Extract top 15 most recent headlines (wider net)
@@ -169,7 +205,7 @@ async function generateArticle() {
     Do not wrap the whole response in a markdown code block (\`\`\`markdown \`\`\`). Starts immediately with the frontmatter.
     Include the following YAML frontmatter at the very top of the file:
     ---
-    title: "[A Catchy, Clickable Title about the AI topic — must be under 50 characters in Japanese]"
+    title: "[MUST follow these rules: (1) Under 45 chars in Japanese, (2) Use one of these proven patterns: 数字型「○○が△△%向上」/ 対比型「○○ vs △△」/ 問題提起型「なぜ○○は△△なのか」/ 衝撃事実型「○○、実は△△だった」, (3) Include the specific product/company name, (4) Do NOT use generic buzzwords like '衝撃' '革命' '未来']"
     description: "[A compelling SEO description in 120-160 characters. Include the main keyword naturally. Make it actionable and curiosity-inducing.]"
     pubDate: "YYYY-MM-DD"
     tags: ["タグ1", "タグ2"]  # Must be an array of 2 to 4 keywords (e.g. "OpenAI", "ChatGPT", "画像生成")

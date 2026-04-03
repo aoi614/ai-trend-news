@@ -959,6 +959,55 @@ matchedAffiliates = matchedAffiliates.filter(a => !a.url.includes('sample') && !
 			};
 
 			initMermaid();
+
+			// ===== Auto Internal Linking =====
+			// 記事本文中のキーワードから関連記事への内部リンクを自動生成
+			const autoLink = () => {
+				const articleBody = document.querySelector('.prose');
+				if (!articleBody) return;
+
+				// 関連記事カードからリンクデータを収集
+				const relatedCards = document.querySelectorAll('.related-card');
+				if (relatedCards.length === 0) return;
+
+				const linkData = Array.from(relatedCards).map(card => {
+					const titleEl = card.querySelector('.related-card-title');
+					return {
+						title: titleEl?.textContent?.trim() || '',
+						url: card.getAttribute('href') || '',
+					};
+				}).filter(d => d.title && d.url);
+
+				if (linkData.length === 0) return;
+
+				// 各段落のテキストをスキャンし、関連記事タイトルのキーワードが含まれていたらリンク化
+				const paragraphs = articleBody.querySelectorAll('p');
+				let linked = 0;
+				const maxLinks = 3; // 過剰なリンクを避ける
+
+				for (const p of paragraphs) {
+					if (linked >= maxLinks) break;
+					// ヘッダー直後の段落やTL;DRブロック内はスキップ
+					if (p.closest('blockquote')) continue;
+
+					for (const { title, url } of linkData) {
+						if (linked >= maxLinks) break;
+						// タイトルから2文字以上の重要キーワードを抽出
+						const keywords = title.replace(/[「」『』！？]/g, '').split(/[\s、。・]+/).filter(w => w.length >= 3).slice(0, 3);
+
+						for (const kw of keywords) {
+							if (linked >= maxLinks) break;
+							if (p.textContent.includes(kw) && !p.innerHTML.includes(`href="`)) {
+								const link = `<a href="${url}" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px" title="${title}">${kw}</a>`;
+								p.innerHTML = p.innerHTML.replace(kw, link);
+								linked++;
+								break;
+							}
+						}
+					}
+				}
+			};
+			autoLink();
 		</script>
 		<style is:global>
 			/* ===== Affiliate CTA ===== */
