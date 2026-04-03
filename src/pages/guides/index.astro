@@ -1,0 +1,134 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { SITE_TITLE } from '../../consts';
+
+const guides = [
+  {
+    slug: 'generative-ai',
+    emoji: '🧠',
+    title: '生成AI（Generative AI）完全ガイド',
+    desc: 'ChatGPT、画像生成、動画生成AIの基礎から最新動向、ビジネス活用法まで網羅した総合ガイド。',
+  },
+  {
+    slug: 'ai-agents',
+    emoji: '🤖',
+    title: 'AIエージェント完全ガイド',
+    desc: 'AIエージェントの仕組み、活用事例、主要プラットフォーム比較、リスクと対策を徹底解説。',
+  },
+  {
+    slug: 'local-ai',
+    emoji: '💻',
+    title: 'ローカルAI・オープンソースLLM入門',
+    desc: 'ローカルAIの始め方から主要モデル比較、ビジネス活用まで。プライバシー重視のAI導入ガイド。',
+  },
+];
+
+const breadcrumbs = [
+  { name: 'ホーム', url: '/' },
+  { name: 'ガイド', url: '/guides/' },
+];
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <BaseHead
+      title={`AIガイド・完全攻略まとめ | ${SITE_TITLE}`}
+      description="生成AI、AIエージェント、ローカルAIなど主要トピックの完全ガイド。基礎から最新動向まで、テーマ別に深く理解できる総合まとめページ。"
+      breadcrumbs={breadcrumbs}
+    />
+    <style>
+      .guides-hero {
+        background: linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%);
+        padding: 4rem 2rem 3rem;
+        text-align: center;
+      }
+      .guides-hero h1 {
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        font-weight: 800;
+        color: #f1f5f9;
+        margin-bottom: 0.75rem;
+      }
+      .guides-hero p {
+        color: #94a3b8;
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.8;
+      }
+      .guides-grid {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+        display: grid;
+        gap: 1.5rem;
+      }
+      .guide-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(30,41,59,0.6));
+        border: 1px solid rgba(148,163,184,0.1);
+        border-radius: 16px;
+        text-decoration: none;
+        transition: transform 0.2s, border-color 0.3s;
+      }
+      .guide-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(14,165,233,0.4);
+      }
+      .guide-emoji {
+        font-size: 3rem;
+        flex-shrink: 0;
+      }
+      .guide-info h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #f1f5f9;
+        margin-bottom: 0.5rem;
+      }
+      .guide-info p {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        margin-bottom: 0.75rem;
+      }
+      .guide-link {
+        font-size: 0.85rem;
+        color: #0ea5e9;
+        font-weight: 600;
+      }
+      @media (max-width: 600px) {
+        .guide-card { flex-direction: column; gap: 1rem; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+    <Breadcrumb items={breadcrumbs} />
+
+    <section class="guides-hero">
+      <h1>📚 AIガイド・完全攻略まとめ</h1>
+      <p>主要AIトピックを深く理解するための総合ガイド。関連記事を自動集約し、最新情報を常に反映しています。</p>
+    </section>
+
+    <div class="guides-grid">
+      {guides.map(guide => (
+        <a class="guide-card" href={`/guides/${guide.slug}/`}>
+          <span class="guide-emoji">{guide.emoji}</span>
+          <div class="guide-info">
+            <h2>{guide.title}</h2>
+            <p>{guide.desc}</p>
+            <span class="guide-link">ガイドを読む →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <Footer />
+  </body>
+</html>

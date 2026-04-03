@@ -1,0 +1,389 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { SITE_TITLE } from '../../consts';
+
+// ===== ピラーページ定義 =====
+const pillarPages = [
+  {
+    slug: 'generative-ai',
+    title: '【2026年最新】生成AIとは？ChatGPT・画像生成・動画生成を完全網羅',
+    description: '生成AI（Generative AI）の基礎知識から最新動向まで完全解説。ChatGPT、Midjourney、Sora等の主要ツールの比較・活用法・ビジネス活用事例を網羅したガイド。',
+    heroEmoji: '🧠',
+    tags: ['生成AI', 'ChatGPT', 'OpenAI', '画像生成AI', '動画生成', 'AI', 'LLM'],
+    sections: [
+      { title: '生成AIとは何か？', content: '生成AI（Generative AI）とは、テキスト・画像・音声・動画などのコンテンツを自動で生成するAI技術の総称です。2022年末のChatGPTの登場を皮切りに、画像生成のMidjourney・Stable Diffusion、動画生成のSora・Runway等が次々と登場し、クリエイティブ産業からビジネスまで、あらゆる分野で活用が進んでいます。' },
+      { title: 'テキスト生成AI', content: 'ChatGPT（OpenAI）、Claude（Anthropic）、Gemini（Google）の3大LLMを中心に、コード生成、文章作成、翻訳、要約など多岐にわたるタスクで実用化が進んでいます。2026年にはGPT-5やClaude 4の登場で、推論能力が飛躍的に向上しました。' },
+      { title: '画像・動画生成AI', content: 'Midjourney、DALL-E 3、Stable Diffusion、Adobe Fireflyなどの画像生成AI、そしてSora、Runway Gen-3、Pika等の動画生成AIが急速に進化。商用利用可能なモデルも増え、広告・EC・エンタメ業界での活用が加速しています。' },
+      { title: 'ビジネスでの活用法', content: '生成AIはマーケティング、カスタマーサポート、プロダクト開発、データ分析など幅広いビジネス領域で活用されています。特にAIエージェントの台頭により、自律的なタスク遂行が可能になりつつあります。' },
+    ],
+  },
+  {
+    slug: 'ai-agents',
+    title: '【完全ガイド】AIエージェントとは？仕組み・活用事例・主要ツール比較',
+    description: 'AIエージェントの基本概念から最新動向まで徹底解説。自律型AI、マルチエージェント、ビジネス活用事例、主要プラットフォームの比較を網羅。',
+    heroEmoji: '🤖',
+    tags: ['AIエージェント', '自動化', 'AI', 'ChatGPT', 'OpenAI', 'Google AI'],
+    sections: [
+      { title: 'AIエージェントとは？', content: 'AIエージェントとは、人間の指示を受けて自律的にタスクを遂行するAIシステムです。従来のチャットボットとは異なり、複数のツールを使い分け、計画を立て、実行結果を評価しながら目標を達成します。2026年現在、OpenAIのGPT Operator、GoogleのProject Mariner、AnthropicのComputer Useなどが注目を集めています。' },
+      { title: 'AIエージェントの仕組み', content: 'AIエージェントは「計画（Planning）」「実行（Action）」「観察（Observation）」「反省（Reflection）」のループで動作します。大規模言語モデル（LLM）を頭脳とし、API呼び出し、ブラウザ操作、コード実行などの外部ツールを手足として活用します。' },
+      { title: 'ビジネスでの活用事例', content: 'カスタマーサポートの自動化、営業プロセスの効率化、コードレビューの自動化、データ分析レポートの自動生成など、既に多くの企業でAIエージェントが業務に導入され始めています。' },
+      { title: 'AIエージェントのリスクと課題', content: 'AIエージェントの暴走リスク、データセキュリティ、ハルシネーション（誤った情報の生成）、責任の所在など、解決すべき課題も多く存在します。ガバナンス体制の整備が急務です。' },
+    ],
+  },
+  {
+    slug: 'local-ai',
+    title: '【入門】ローカルAI・オープンソースLLMの始め方と2026年の最新動向',
+    description: 'ローカルAI・オープンソースLLMの基礎知識から実践的な導入方法まで完全ガイド。Llama、Mistral、GPT-ossなどの主要モデル比較と活用法を解説。',
+    heroEmoji: '💻',
+    tags: ['ローカルAI', 'オープンソースAI', 'LLM', 'AI', 'OpenAI'],
+    sections: [
+      { title: 'ローカルAIとは？', content: 'ローカルAIとは、クラウドサービスに依存せず、自分のPCやサーバー上で動作するAIモデルのことです。データのプライバシーが保護され、APIコストがかからず、インターネット接続がなくても利用できるメリットがあります。' },
+      { title: '主要なオープンソースLLM', content: 'Meta社のLlama 3シリーズ、MistralのMistral/Mixtral、GoogleのGemma、そして2026年にOpenAIが公開したGPT-ossなど、高性能なオープンソースモデルが次々と登場しています。日本語対応モデルも増えており、実用的な水準に達しています。' },
+      { title: '始め方・導入方法', content: 'Ollama、LM Studio、llama.cppなどのツールを使えば、数分でローカルAIを導入できます。M1/M2 MacやNVIDIA GPU搭載PCであれば、7B〜70Bパラメータのモデルが快適に動作します。' },
+      { title: 'ローカルAIのビジネス活用', content: '機密データを扱う企業内での文書処理、オフライン環境での翻訳、プライバシーが重視される医療・法務分野での活用が進んでいます。' },
+    ],
+  },
+];
+
+// 現在のIDを取得
+const { id } = Astro.params;
+const pillar = pillarPages.find(p => p.slug === id);
+if (!pillar) return Astro.redirect('/404');
+
+// 関連記事の取得
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+  .filter(post => post.data.tags?.some((t: string) => pillar.tags.includes(t)))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const breadcrumbs = [
+  { name: 'ホーム', url: '/' },
+  { name: 'ガイド', url: '/guides/' },
+  { name: pillar.title.split('】')[1]?.substring(0, 20) || pillar.title.substring(0, 20), url: `/guides/${pillar.slug}/` },
+];
+
+export async function getStaticPaths() {
+  return [
+    { params: { id: 'generative-ai' } },
+    { params: { id: 'ai-agents' } },
+    { params: { id: 'local-ai' } },
+  ];
+}
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <BaseHead
+      title={pillar.title}
+      description={pillar.description}
+      type="article"
+      breadcrumbs={breadcrumbs}
+    />
+    <style>
+      .pillar-hero {
+        background: linear-gradient(135deg, #0c1222 0%, #0f172a 40%, #1e293b 100%);
+        padding: 4rem 2rem 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .pillar-hero::before {
+        content: '';
+        position: absolute;
+        top: -100px; right: -100px;
+        width: 400px; height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%);
+      }
+      .pillar-hero-emoji {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .pillar-hero h1 {
+        font-size: clamp(1.5rem, 4vw, 2.2rem);
+        font-weight: 800;
+        color: #f1f5f9;
+        max-width: 800px;
+        margin: 0 auto 1rem;
+        line-height: 1.4;
+      }
+      .pillar-hero-desc {
+        color: #94a3b8;
+        font-size: 1rem;
+        max-width: 650px;
+        margin: 0 auto;
+        line-height: 1.8;
+      }
+      .pillar-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+      }
+      .pillar-stat {
+        text-align: center;
+      }
+      .pillar-stat-num {
+        font-size: 2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .pillar-stat-label {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 0.25rem;
+      }
+
+      .pillar-content {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+      }
+
+      /* TOC */
+      .pillar-toc {
+        background: rgba(14, 165, 233, 0.05);
+        border: 1px solid rgba(14, 165, 233, 0.15);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+      }
+      .pillar-toc h2 {
+        font-size: 1.1rem;
+        color: #f1f5f9;
+        margin-bottom: 1rem;
+      }
+      .pillar-toc ol {
+        list-style: none;
+        counter-reset: toc;
+        padding: 0;
+      }
+      .pillar-toc li {
+        counter-increment: toc;
+        margin-bottom: 0.5rem;
+      }
+      .pillar-toc li::before {
+        content: counter(toc) '.';
+        color: #0ea5e9;
+        font-weight: 700;
+        margin-right: 0.5rem;
+      }
+      .pillar-toc a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .pillar-toc a:hover { color: #38bdf8; }
+
+      /* Sections */
+      .pillar-section {
+        margin-bottom: 3rem;
+        scroll-margin-top: 80px;
+      }
+      .pillar-section h2 {
+        font-size: 1.5rem;
+        color: #f1f5f9;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid rgba(14, 165, 233, 0.3);
+      }
+      .pillar-section p {
+        color: #cbd5e1;
+        line-height: 2;
+        font-size: 1rem;
+      }
+
+      /* Related Articles Grid */
+      .pillar-articles-heading {
+        font-size: 1.3rem;
+        color: #f1f5f9;
+        font-weight: 700;
+        margin: 3rem 0 1.5rem;
+        text-align: center;
+      }
+      .pillar-articles-desc {
+        color: #64748b;
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+      }
+      .pillar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+      .pillar-card {
+        background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(30,41,59,0.6));
+        border: 1px solid rgba(148,163,184,0.1);
+        border-radius: 14px;
+        overflow: hidden;
+        text-decoration: none;
+        transition: transform 0.2s, border-color 0.2s;
+      }
+      .pillar-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(14,165,233,0.4);
+      }
+      .pillar-card-img {
+        aspect-ratio: 16/9;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+      }
+      .pillar-card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .pillar-card-body {
+        padding: 1rem 1.25rem 1.25rem;
+      }
+      .pillar-card-date {
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+      .pillar-card-title {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        line-height: 1.5;
+        margin-top: 0.5rem;
+      }
+
+      /* CTA */
+      .pillar-cta {
+        text-align: center;
+        margin: 3rem 0;
+        padding: 2.5rem 2rem;
+        background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(56,189,248,0.12));
+        border-radius: 16px;
+        border: 1px solid rgba(14,165,233,0.2);
+      }
+      .pillar-cta h3 {
+        color: #f1f5f9;
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+      }
+      .pillar-cta p {
+        color: #94a3b8;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+      .pillar-cta-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        color: white;
+        padding: 12px 28px;
+        border-radius: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .pillar-cta-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(14,165,233,0.3);
+      }
+
+      @media (max-width: 600px) {
+        .pillar-hero { padding: 2.5rem 1rem 2rem; }
+        .pillar-hero h1 { font-size: 1.3rem; }
+        .pillar-stats { gap: 1rem; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header />
+    <Breadcrumb items={breadcrumbs} />
+
+    <section class="pillar-hero">
+      <span class="pillar-hero-emoji">{pillar.heroEmoji}</span>
+      <h1>{pillar.title}</h1>
+      <p class="pillar-hero-desc">{pillar.description}</p>
+      <div class="pillar-stats">
+        <div class="pillar-stat">
+          <div class="pillar-stat-num">{relatedPosts.length}</div>
+          <div class="pillar-stat-label">関連記事</div>
+        </div>
+        <div class="pillar-stat">
+          <div class="pillar-stat-num">{pillar.sections.length}</div>
+          <div class="pillar-stat-label">セクション</div>
+        </div>
+        <div class="pillar-stat">
+          <div class="pillar-stat-num">{pillar.tags.length}</div>
+          <div class="pillar-stat-label">関連タグ</div>
+        </div>
+      </div>
+    </section>
+
+    <main class="pillar-content">
+      <!-- Table of Contents -->
+      <nav class="pillar-toc">
+        <h2>📋 目次</h2>
+        <ol>
+          {pillar.sections.map((sec, i) => (
+            <li><a href={`#section-${i}`}>{sec.title}</a></li>
+          ))}
+          <li><a href="#related-articles">📰 関連記事一覧</a></li>
+        </ol>
+      </nav>
+
+      <!-- Main Sections -->
+      {pillar.sections.map((sec, i) => (
+        <section class="pillar-section" id={`section-${i}`}>
+          <h2>{sec.title}</h2>
+          <p>{sec.content}</p>
+        </section>
+      ))}
+
+      <!-- Related Articles -->
+      <section id="related-articles">
+        <h2 class="pillar-articles-heading">📰 このトピックの最新記事</h2>
+        <p class="pillar-articles-desc">当サイトの関連記事を新着順に表示しています（自動更新）</p>
+        <div class="pillar-grid">
+          {relatedPosts.slice(0, 12).map((post) => (
+            <a class="pillar-card" href={`/blog/${post.id}/`}>
+              <div class="pillar-card-img">
+                {post.data.heroImage ? (
+                  <img src={post.data.heroImage} alt="" loading="lazy" decoding="async" />
+                ) : (
+                  <img src={`/og/${post.id}.png`} alt="" loading="lazy" decoding="async" />
+                )}
+              </div>
+              <div class="pillar-card-body">
+                <span class="pillar-card-date">
+                  <FormattedDate date={post.data.pubDate} />
+                </span>
+                <span class="pillar-card-title">{post.data.title}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <div class="pillar-cta">
+        <h3>🚀 最新のAIニュースを毎日配信中</h3>
+        <p>米国の最新AI関連ニュースを日本語でいち早くお届け。ブックマークで最新情報をキャッチ！</p>
+        <a class="pillar-cta-btn" href="/blog/">
+          すべての記事を見る →
+        </a>
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
