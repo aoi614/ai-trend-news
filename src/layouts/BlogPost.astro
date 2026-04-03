@@ -12,7 +12,7 @@ import Header from '../components/Header.astro';
 import AuthorProfile from '../components/AuthorProfile.astro';
 import Giscus from '../components/Giscus.astro';
 import TagBadge from '../components/TagBadge.astro';
-import NewsletterCTA from '../components/NewsletterCTA.astro';
+import NewsletterForm from '../components/NewsletterForm.astro';
 
 interface Heading {
 	depth: number;
@@ -733,8 +733,8 @@ matchedAffiliates = matchedAffiliates.filter(a => !a.url.includes('sample') && !
 				<!-- Author Box -->
 				<AuthorProfile />
 
-				<!-- Newsletter CTA -->
-				<NewsletterCTA />
+				<!-- Newsletter Form -->
+				<NewsletterForm />
 
 				<!-- Comments section (Giscus) -->
 				<Giscus />

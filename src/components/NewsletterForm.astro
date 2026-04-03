@@ -1,0 +1,331 @@
+---
+// src/components/NewsletterForm.astro
+---
+
+<div class="newsletter-wrapper">
+	<div class="newsletter-card fade-in">
+		<div class="newsletter-content">
+			<div class="icon-wrapper">
+				<span class="icon">✉️</span>
+			</div>
+			<h3>最新のAIトレンドを見逃さない</h3>
+			<p>
+				週に1回、AI業界の最前線ニュースや実務で使えるプロンプト技術を厳選してお届けします。「読まれる」メルマガで、AIネイティブ時代をリードしましょう。
+			</p>
+			
+			<form id="newsletter-form" class="newsletter-form">
+				<div class="input-group">
+					<input 
+						type="email" 
+						id="email-input"
+						placeholder="あなたのメールアドレス" 
+						required 
+					/>
+					<button type="submit" class="submit-btn" id="submit-btn">
+						<span>無料購読する</span>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="5" y1="12" x2="19" y2="12"></line>
+							<polyline points="12 5 19 12 12 19"></polyline>
+						</svg>
+					</button>
+				</div>
+				<p class="privacy-note">
+					<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+						<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+					</svg>
+					スパムメールはお送りしません。いつでも解除可能です。
+				</p>
+			</form>
+
+			<div id="success-message" class="success-message hidden">
+				<div class="success-icon">🎉</div>
+				<h4>登録完了しました！</h4>
+				<p>ご登録ありがとうございます。<br/>初回のメールをお楽しみに。</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.newsletter-wrapper {
+		padding: 4rem 1.5rem;
+		display: flex;
+		justify-content: center;
+	}
+
+	.newsletter-card {
+		position: relative;
+		width: 100%;
+		max-width: 800px;
+		background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 24px;
+		padding: 3rem 2rem;
+		text-align: center;
+		overflow: hidden;
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(10px);
+	}
+
+	/* Decorative background glows */
+	.newsletter-card::before {
+		content: '';
+		position: absolute;
+		top: -50%;
+		left: -20%;
+		width: 60%;
+		height: 150%;
+		background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 60%);
+		transform: rotate(-45deg);
+		pointer-events: none;
+	}
+
+	.newsletter-card::after {
+		content: '';
+		position: absolute;
+		bottom: -20%;
+		right: -10%;
+		width: 50%;
+		height: 50%;
+		background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 60%);
+		pointer-events: none;
+	}
+
+	.newsletter-content {
+		position: relative;
+		z-index: 1;
+		max-width: 540px;
+		margin: 0 auto;
+	}
+
+	.icon-wrapper {
+		width: 64px;
+		height: 64px;
+		background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(56, 189, 248, 0.05));
+		border: 1px solid rgba(14, 165, 233, 0.3);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 1.5rem;
+		box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
+	}
+
+	.icon {
+		font-size: 1.8rem;
+	}
+
+	h3 {
+		font-size: 1.8rem;
+		color: #f8fafc;
+		margin-bottom: 1rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+	}
+
+	p {
+		color: #94a3b8;
+		font-size: 1.05rem;
+		line-height: 1.6;
+		margin-bottom: 2rem;
+	}
+
+	.newsletter-form {
+		position: relative;
+		transition: opacity 0.4s ease, transform 0.4s ease;
+	}
+
+	.newsletter-form.fade-out {
+		opacity: 0;
+		transform: translateY(-10px);
+		pointer-events: none;
+	}
+
+	.input-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.8rem;
+		margin-bottom: 1rem;
+	}
+
+	@media (min-width: 600px) {
+		.input-group {
+			flex-direction: row;
+			background: rgba(15, 23, 42, 0.6);
+			border: 1px solid rgba(255, 255, 255, 0.15);
+			border-radius: 50px;
+			padding: 0.4rem;
+			gap: 0;
+		}
+	}
+
+	input[type="email"] {
+		width: 100%;
+		padding: 1rem 1.5rem;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 12px;
+		color: #f1f5f9;
+		font-size: 1rem;
+		outline: none;
+		transition: all 0.3s ease;
+	}
+
+	@media (min-width: 600px) {
+		input[type="email"] {
+			background: transparent;
+			border: none;
+		}
+	}
+
+	input[type="email"]:focus {
+		border-color: #0ea5e9;
+		box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+	}
+
+	@media (min-width: 600px) {
+		input[type="email"]:focus {
+			box-shadow: none;
+		}
+	}
+
+	.submit-btn {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 1rem 1.5rem;
+		background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+		color: #fff;
+		border: none;
+		border-radius: 12px;
+		font-size: 1rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+	}
+
+	@media (min-width: 600px) {
+		.submit-btn {
+			width: auto;
+			border-radius: 40px;
+		}
+	}
+
+	.submit-btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(14, 165, 233, 0.5);
+	}
+
+	.submit-btn:active {
+		transform: translateY(0);
+	}
+
+	.privacy-note {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4rem;
+		font-size: 0.8rem;
+		color: #64748b;
+		margin-bottom: 0;
+	}
+
+	/* Success State */
+	.success-message {
+		position: absolute;
+		top: 50%;
+		left: 0;
+		right: 0;
+		transform: translateY(-50%) translateY(20px);
+		opacity: 0;
+		visibility: hidden;
+		transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+		pointer-events: none;
+	}
+
+	.success-message.visible {
+		transform: translateY(-50%) translateY(0);
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+
+	.success-icon {
+		font-size: 3rem;
+		margin-bottom: 1rem;
+		animation: bounce 2s infinite ease-in-out;
+	}
+
+	.success-message h4 {
+		font-size: 1.5rem;
+		color: #10b981;
+		margin-bottom: 0.5rem;
+	}
+
+	.success-message p {
+		margin-bottom: 0;
+		font-size: 1rem;
+		color: #cbd5e1;
+	}
+
+	/* Generic fade-in for scroll animation if observing */
+	.fade-in {
+		opacity: 0;
+		transform: translateY(20px);
+		animation: fadeInUp 0.8s ease forwards;
+	}
+
+	@keyframes fadeInUp {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes bounce {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-10px); }
+	}
+</style>
+
+<script is:inline>
+	(function() {
+		const form = document.getElementById('newsletter-form');
+		const successMessage = document.getElementById('success-message');
+		const btnSpan = document.querySelector('#submit-btn span');
+		
+		if (form) {
+			form.addEventListener('submit', function(e) {
+				e.preventDefault();
+				const email = document.getElementById('email-input').value;
+				
+				// 登録中のローディング状態
+				if(btnSpan) btnSpan.textContent = '送信中...';
+				
+				// GA4コンバージョンイベント（設定されていれば）
+				if (typeof gtag === 'function') {
+					gtag('event', 'generate_lead', {
+						event_category: 'Newsletter',
+						event_label: 'Main Subscribe Form'
+					});
+				}
+
+				// 疑似的な非同期処理（後で実際のAPIに置き換え可能）
+				setTimeout(() => {
+					form.classList.add('fade-out');
+					
+					setTimeout(() => {
+						successMessage.classList.add('visible');
+					}, 300);
+					
+					// フォームクリア
+					form.reset();
+				}, 800);
+			});
+		}
+	})();
+</script>
