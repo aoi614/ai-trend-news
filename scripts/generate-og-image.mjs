@@ -11,7 +11,7 @@ const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 
 // Load Noto Sans JP font for satori
-async function loadFont() {
+export async function loadFont() {
   // Download from Google Fonts API (subset for performance)
   const fontUrl = "https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&display=swap";
   const cssRes = await fetch(fontUrl, {
@@ -29,7 +29,7 @@ async function loadFont() {
 }
 
 // Generate OG image for a single article
-async function generateOgImage(title, slug, fontData, outputDir) {
+export async function generateOgImage(title, slug, fontData, outputDir) {
   // Truncate title if too long
   const displayTitle = title.length > 40 ? title.substring(0, 38) + "…" : title;
 
@@ -250,7 +250,9 @@ async function main() {
   console.log(`\n🎉 Done! Generated: ${generated}, Skipped: ${skipped}`);
 }
 
-main().catch((err) => {
-  console.error("Error:", err);
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error("Error:", err);
+    process.exit(1);
+  });
+}

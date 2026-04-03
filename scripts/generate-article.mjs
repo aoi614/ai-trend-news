@@ -177,7 +177,13 @@ async function generateArticle() {
     ---
     
     ### ARTICLE STRUCTURE REQUIREMENTS:
-    1. **Opening hook** (2-3 sentences): Start with a compelling, attention-grabbing statement that makes the reader want to continue. NO generic introductions.
+    1. **TL;DR Block (3行まとめ)**: IMMEDIATELY after the frontmatter, write exactly 3 bullet points summarizing the article concisely. You MUST use exactly this format (with the blockquote):
+       > **💡 この記事のポイント**
+       > - [箇条書きポイント1]
+       > - [箇条書きポイント2]
+       > - [箇条書きポイント3]
+       
+    2. **Opening hook** (2-3 sentences): Start with a compelling, attention-grabbing statement that makes the reader want to continue. NO generic introductions.
     2. **4-5 main sections** with H2 headings: Each section should be substantial (300+ words).
     3. **Sub-sections** with H3 headings where appropriate.
     4. **Total article length**: Minimum 2000 characters in Japanese. Aim for thorough, in-depth coverage.
