@@ -177,13 +177,119 @@ window.addEventListener('load', function() {
 	document.addEventListener('astro:after-swap', setDarkMode);
 </script>
 
-<!-- PWA Service Worker Registration -->
+<!-- PWA Service Worker + Push Notification -->
 <script is:inline>
 	if ('serviceWorker' in navigator) {
-		window.addEventListener('load', () => {
-			navigator.serviceWorker.register('/sw.js').catch((error) => {
+		window.addEventListener('load', async () => {
+			try {
+				const registration = await navigator.serviceWorker.register('/sw.js');
+				
+				// 通知許可をまだ求めていない場合、バナーを表示
+				if ('Notification' in window && Notification.permission === 'default') {
+					// 2回目以降の訪問（またはスクロール後）にバナー表示
+					const visited = localStorage.getItem('ai-trend-visited');
+					if (visited) {
+						setTimeout(() => showNotificationBanner(registration), 8000);
+					} else {
+						localStorage.setItem('ai-trend-visited', 'true');
+					}
+				}
+
+				// 通知が許可済みの場合: 新記事チェック
+				if ('Notification' in window && Notification.permission === 'granted') {
+					checkForNewArticles(registration);
+				}
+			} catch (error) {
 				console.error('ServiceWorker registration failed: ', error);
-			});
+			}
 		});
+	}
+
+	function showNotificationBanner(registration) {
+		// 既にバナーが表示されている場合はスキップ
+		if (document.getElementById('push-banner')) return;
+
+		const banner = document.createElement('div');
+		banner.id = 'push-banner';
+		banner.innerHTML = `
+			<div style="
+				position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+				z-index:9999;max-width:460px;width:calc(100% - 32px);
+				background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
+				border:1px solid rgba(14,165,233,0.3);border-radius:16px;
+				padding:20px 24px;display:flex;align-items:center;gap:16px;
+				box-shadow:0 8px 32px rgba(0,0,0,0.4);
+				animation:slideUp 0.4s cubic-bezier(0.22,1,0.36,1);
+			">
+				<div style="font-size:2rem;flex-shrink:0;">🔔</div>
+				<div style="flex:1;">
+					<div style="color:#f1f5f9;font-weight:700;font-size:0.95rem;margin-bottom:4px;">最新AI記事を通知で受け取る</div>
+					<div style="color:#94a3b8;font-size:0.8rem;">新着記事が公開されたらお知らせします</div>
+				</div>
+				<div style="display:flex;gap:8px;flex-shrink:0;">
+					<button id="push-allow" style="
+						background:linear-gradient(135deg,#0ea5e9,#38bdf8);color:#fff;
+						border:none;border-radius:10px;padding:8px 16px;font-size:0.85rem;
+						font-weight:600;cursor:pointer;
+					">許可する</button>
+					<button id="push-dismiss" style="
+						background:transparent;color:#64748b;border:1px solid #334155;
+						border-radius:10px;padding:8px 12px;font-size:0.8rem;cursor:pointer;
+					">✕</button>
+				</div>
+			</div>
+		`;
+		document.body.appendChild(banner);
+
+		// アニメーション
+		const style = document.createElement('style');
+		style.textContent = '@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
+		document.head.appendChild(style);
+
+		document.getElementById('push-allow').addEventListener('click', async () => {
+			const result = await Notification.requestPermission();
+			banner.remove();
+			if (result === 'granted') {
+				checkForNewArticles(registration);
+			}
+		});
+
+		document.getElementById('push-dismiss').addEventListener('click', () => {
+			banner.remove();
+			localStorage.setItem('push-dismissed', Date.now().toString());
+		});
+	}
+
+	async function checkForNewArticles(registration) {
+		try {
+			const lastCheck = localStorage.getItem('last-article-check') || '2000-01-01';
+			const res = await fetch('/rss.xml');
+			const text = await res.text();
+			const parser = new DOMParser();
+			const xml = parser.parseFromString(text, 'text/xml');
+			const items = xml.querySelectorAll('item');
+			
+			if (items.length > 0) {
+				const firstItem = items[0];
+				const pubDate = firstItem.querySelector('pubDate')?.textContent || '';
+				const title = firstItem.querySelector('title')?.textContent || '';
+				const link = firstItem.querySelector('link')?.textContent || '/';
+				
+				if (pubDate && new Date(pubDate) > new Date(lastCheck)) {
+					// 新しい記事が見つかった！Service Workerに通知を依頼
+					if (registration.active) {
+						registration.active.postMessage({
+							type: 'NEW_ARTICLE',
+							title: title,
+							url: link,
+						});
+					}
+				}
+			}
+			
+			localStorage.setItem('last-article-check', new Date().toISOString());
+		} catch (e) {
+			console.log('Article check skipped:', e.message);
+		}
 	}
 </script>
