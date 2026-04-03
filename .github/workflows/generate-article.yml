@@ -1,0 +1,58 @@
+name: Automated AI Article Generation
+
+on:
+  schedule:
+    # Run twice a day (e.g., 23:00 UTC and 11:00 UTC which is 8:00 JST and 20:00 JST)
+    - cron: '0 23,11 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to push commits back
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # We only need the latest commit to push changes
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # LTS version
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate AI Article
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          # Run the generation script
+          node scripts/generate-article.mjs
+
+      - name: Commit and Push changes
+        run: |
+          # Check if there are any changes (new markdown or images)
+          if [[ -n $(git status -s) ]]; then
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+            git add src/content/blog/*.md public/og/*.png
+            
+            # Extract the new filename to use in commit message
+            NEW_FILE=$(git diff --name-only --cached | grep '\.md$' | head -n 1)
+            COMMIT_MSG="Auto-generate AI news article"
+            if [ -n "$NEW_FILE" ]; then
+              COMMIT_MSG="📝 Add new article: $(basename $NEW_FILE .md)"
+            fi
+
+            git commit -m "$COMMIT_MSG"
+            
+            # The GITHUB_TOKEN is available by default and the permissions block allows pushing
+            git push origin main
+          else
+            echo "No new articles generated."
+          fi

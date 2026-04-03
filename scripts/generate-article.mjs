@@ -100,20 +100,19 @@ async function getExistingArticles() {
 // ===== Topic Diversity: Rotate RSS queries =====
 function getRandomQuery() {
   const queries = [
-    'AI 最新ニュース 2026',
-    'ChatGPT 新機能 アップデート',
-    'Claude 3 Anthropic 活用',
-    'Gemini Google AI ニュース',
-    '生成AI ビジネス 導入事例',
-    'オープンソース LLM Llama',
-    'AI 著作権 規制 法律',
-    'AI 画像生成 OR 動画生成 最新',
-    'AI スタートアップ 資金調達日本',
-    'AI プログラミング 開発ツール',
-    'AI エージェント 自動化',
-    'ロボティクス AI 最新動向',
-    'AI PC スマホ デバイス',
-    'AI 音楽生成 音声アシスタント'
+    'AI news 2026',
+    'OpenAI ChatGPT update',
+    'Anthropic Claude 3 AI',
+    'Google Gemini AI',
+    'Generative AI startup funding',
+    'Open source LLM Llama',
+    'AI copyright regulation law',
+    'AI image video generation latest',
+    'AI programming tools developer',
+    'AI agents automation',
+    'Robotics AI news',
+    'AI hardware PC mobile',
+    'Local LLM open weights'
   ];
   const query = queries[Math.floor(Math.random() * queries.length)];
   console.log(`🎯 Selected query theme: ${query}`);
@@ -136,7 +135,7 @@ async function generateArticle() {
   console.log("Fetching latest AI news from Google News RSS...");
   const parser = new Parser();
   const queryStr = encodeURIComponent(getRandomQuery());
-  const feed = await parser.parseURL(`https://news.google.com/rss/search?q=${queryStr}&hl=ja&gl=JP&ceid=JP:ja`);
+  const feed = await parser.parseURL(`https://news.google.com/rss/search?q=${queryStr}&hl=en-US&gl=US&ceid=US:en`);
   
   // Extract top 15 most recent headlines (wider net)
   const topNews = feed.items.slice(0, 15).map((item, i) => `${i+1}. ${item.title} (${item.pubDate})`).join("\n");
@@ -158,12 +157,12 @@ async function generateArticle() {
   }
 
   const prompt = `
-    You are an expert AI researcher and tech blog writer specializing in Artificial Intelligence. 
-    Below are the top 10 trending AI news headlines in Japan RIGHT NOW:
+    You are an expert AI researcher and tech blog writer based in Japan. 
+    Below are the top trending AI news headlines from the US (English) RIGHT NOW:
     
     ${topNews}
     
-    CRITICAL INSTRUCTION: Choose exactly ONE of the most interesting, impactful headlines from the list above, and write a high-quality, engaging, and deeply informative news blog post about it. Do not just list the news; write a full article unpacking that single topic, adding your own simulated "expert insight" on why it matters.
+    CRITICAL INSTRUCTION: Choose exactly ONE of the most interesting, impactful headlines from the list above, and write a high-quality, engaging, and deeply informative Japanese news blog post about it. You must translate the facts accurately but write the article entirely in natural Japanese, adding your own simulated "expert insight" on why it matters to Japanese readers.
     ${duplicateGuard}
     
     The output MUST be exactly in valid Markdown format suitable for an Astro framework blog.
@@ -189,7 +188,7 @@ async function generateArticle() {
     4. **Total article length**: Minimum 2000 characters in Japanese. Aim for thorough, in-depth coverage.
     5. **Bullet points and lists** where they add clarity.
     6. **Bold text** for key terms and emphasis (use naturally, not on every keyword).
-    7. End with a forward-looking perspective, NOT a generic summary.
+    7. **Spicy Opinion Section**: Before the final CTA, you MUST include a dedicated H2 section named "## 🧐 エバンジェリストの辛口オピニオン". Here, drop the neutral tone and write a highly opinionated, slightly provocative 2-3 paragraph take on how this news will brutally impact Japanese businesses, the hidden risks, or massive opportunities others are missing.
     
     ### CRITICAL WRITING STYLE RULES (ANTI-AI DETECTION):
     1. WRITE LIKE A HUMAN TECH BLOGGER. Use a conversational, enthusiastic, and slightly informal tone in Japanese (Desu/Masu form, but natural).
@@ -199,7 +198,8 @@ async function generateArticle() {
     5. Do not write a generic dictionary-style explanation. Write it as a "Hot News/Review" column.
     6. Use varied sentence structures. Mix short punchy sentences with longer analytical ones.
     7. Include specific numbers, dates, or data points when available to add credibility.
-    8. **RICH FORMATTING**: You MUST include at least one Markdown table (e.g., comparing features, pricing, or pros/cons). Also include concrete examples with bullet points.
+    8. **RICH FORMATTING**: You MUST include at least one Markdown table (e.g., comparing features, pricing, or pros/cons). 
+    9. **MERMAID DIAGRAMS**: You MUST include at least one \`\`\`mermaid\`\`\` code block to visually explain a complex concept, architecture, workflow, or comparison mentioned in the news. Make sure the syntax is valid Mermaid.js graph TD or LR.
     
     ### SEO OPTIMIZATION:
     1. The description should be 120-160 characters, containing the primary keyword naturally.
