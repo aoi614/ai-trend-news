@@ -222,45 +222,39 @@ async function generateArticle() {
     2. **Opening hook** (2-3 sentences): Start with a compelling, attention-grabbing statement. Jump straight into the news, like a newspaper lead.
     3. **4-5 main sections** with ## H2 headings: Each section should be substantial (300+ words).
     4. **Sub-sections** with ### H3 headings where appropriate.
-    5. **Total article length**: Minimum 2000 characters in Japanese. Aim for thorough, in-depth coverage.
+    5. **Total article length**: Minimum 2500 characters in Japanese. Aim for thorough, in-depth coverage.
     6. **Bullet points and lists** where they add clarity.
     7. **Bold text** for key terms and emphasis (use naturally, not on every keyword).
-    8. **Spicy Opinion Section**: Before the final CTA section, you MUST include a dedicated H2 section: "## 🧐 エバンジェリストの辛口オピニオン". Here, drop the neutral tone and give a brutally honest, opinionated take on the implications for Japanese businesses. Be specific and provocative. This MUST be an H2 heading (##), not H3.
+    8. **Spicy Opinion Section**: Before the FAQ section, you MUST include a dedicated H2 section: "## 🧐 編集部の辛口オピニオン". Here, drop the neutral tone and give a brutally honest, opinionated take on the implications for Japanese businesses. Be specific and provocative. This MUST be an H2 heading (##).
     
-    ### CRITICAL WRITING STYLE RULES (ANTI-AI DETECTION):
-    1. WRITE LIKE A REAL JOURNALIST. Use natural Japanese (Desu/Masu form) but avoid sounding like a textbook.
+    ### CRITICAL WRITING STYLE RULES (ANTI-AI DETECTION & HIGH VALUE CONTENT):
+    1. WRITE LIKE A REAL PROFESSIONAL JOURNALIST. Use natural Japanese (Desu/Masu form).
     2. ABSOLUTELY BANNED PHRASES — NEVER use ANY of these:
        - 「〜ますよね」「〜ではないでしょうか」「飛び込んできました」「一筋の光」
        - 「結論から言うと」「〜について解説します」「いかがでしたか？」
        - 「この記事では〜を紹介しました」「最後に」「まとめ」「AI言語モデルとして」
-       - 「皆さん」「〜ありますよね。」「止まらない」「〜の波」
-       - 「〜が示す未来」「衝撃」「革命」「ゲームチェンジャー」「まさに」
-       - 「〜に終止符を打つ」「真価を発揮」「〜の渦中に」「〜に注目です」
-       - Any phrase that sounds like a TV presenter or infomercial host
-    3. DO include personal analysis and specific observations (e.g., "ここで注目すべきなのは○○の数字だ", "実際にAPIを試してみたが").
-    4. Vary paragraph lengths naturally. Some short (1-2 sentences), some longer.
-    5. Write it as hard news analysis, not a pep talk or cheerleading article.
-    6. Use varied sentence structures. Mix short punchy sentences with longer analytical ones.
-    7. Include specific numbers, dates, or data points when available to add credibility.
-    8. **RICH FORMATTING**: You MUST include at least one Markdown table (e.g., comparing features, pricing, or pros/cons). 
-    9. **MERMAID DIAGRAMS**: You MUST include at least one \`\`\`mermaid\`\`\` code block to visually explain a concept, architecture, or workflow. Use valid Mermaid.js syntax (graph TD or graph LR). Keep the diagram simple (5-8 nodes max).
+       - Any phrase that sounds like a cheap SEO auto-blog or TV presenter
+    3. DO include specific editorial observations (e.g., "編集部で特に注目したのは○○の点だ").
+    4. Vary paragraph lengths naturally. Mix short punchy sentences with longer analytical ones.
+    5. Include specific numbers, dates, or data points to add credibility.
+    6. **MERMAID DIAGRAM (MANDATORY)**: You ABSOLUTELY MUST include at least one \`\`\`mermaid\`\`\` code block (graph TD or graph LR) right after the introduction or in a technical section to visually explain the core concept, workflow, or architecture. Do NOT skip this. Visualizing data is critical for this site.
+    7. **RICH FORMATTING**: You MUST include at least one Markdown table (e.g., comparing features, pricing, or pros/cons). 
     
-    ### SEO OPTIMIZATION:
-    1. The description should be 120-160 characters, containing the primary keyword naturally.
-    2. Use the primary keyword in the first paragraph and in at least 2 H2 headings.
-    3. Include related keywords and synonyms throughout the article naturally.
+    ### FAQ SECTION (MANDATORY):
+    After the Opinion section and before the CTA, you MUST add exactly this section:
+    
+    ## 💡 よくある質問（FAQ）
+    
+    Write 3 specific, insightful questions that a professional reader might have about this news, and provide concise, accurate answers for each. Format them as an H3 (### Q: ...) followed by the answer (A: ...).
     
     ### CTA SECTION (MANDATORY):
-    At the very end of the article (after all main content and after the opinion section), add a section with this exact format:
+    At the very end of the article, add a section with this exact format:
     
     ## 🔗 関連ツール・サービス
     
     List 2-4 AI tools or services that are directly relevant to the article topic. For each tool:
     - Use this EXACT format: **[ツール名](公式URL)** — 一行説明（日本語で30-50文字）
-    - IMPORTANT: The link syntax must be correct Markdown: [text](url) wrapped in **bold**
-    - Only include tools that are ACTUALLY mentioned or directly related to the article
-    - Use real, correct official URLs (e.g., https://chat.openai.com/ for ChatGPT, https://claude.ai/ for Claude, https://gemini.google.com/ for Gemini)
-    - Do NOT make up fake URLs
+    - Use real, correct official URLs. Do NOT make up fake URLs.
     
     Make it highly readable, optimized for SEO, and extremely valuable.
   `;
