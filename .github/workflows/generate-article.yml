@@ -75,24 +75,15 @@ jobs:
           command: pages deploy dist --project-name=ai-trend-news
 
       - name: Notify Google Search Console (Indexing API)
-        if: steps.commit.outputs.has_changes == 'true' && steps.commit.outputs.slug != ''
+        if: steps.commit.outputs.has_changes == 'true'
         env:
-          GOOGLE_INDEXING_KEY: ${{ secrets.GOOGLE_INDEXING_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: |
-          NEW_URL="https://ai-trend-news.com/blog/${SLUG}/"
-          SLUG="${{ steps.commit.outputs.slug }}"
-          NEW_URL="https://ai-trend-news.com/blog/${SLUG}/"
-          
-          if [ -n "$GOOGLE_INDEXING_KEY" ]; then
-            echo "📡 Submitting $NEW_URL to Google Indexing API..."
-            # Use the Indexing API via curl with service account
-            curl -s -X POST "https://indexing.googleapis.com/v3/urlNotifications:publish" \
-              -H "Content-Type: application/json" \
-              -H "Authorization: Bearer $GOOGLE_INDEXING_KEY" \
-              -d "{\"url\": \"$NEW_URL\", \"type\": \"URL_UPDATED\"}" || true
-            echo "✅ Indexing request sent"
+          if [ -n "$GOOGLE_SERVICE_ACCOUNT_JSON" ]; then
+            echo "📡 Running Google Indexing API script..."
+            node scripts/request-indexing.mjs
           else
-            echo "⏩ GOOGLE_INDEXING_KEY not set, skipping indexing notification"
+            echo "⏩ GOOGLE_SERVICE_ACCOUNT_JSON not set in Secrets. Skipping Google Indexing API."
           fi
 
       - name: Submit to IndexNow & Social Platforms
